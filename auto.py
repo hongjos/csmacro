@@ -9,48 +9,45 @@ def run_game(default=False):
     """
     Start the game and go to World Map. 
     """
-    use_default = default       # use default locations
-    pos = pyautogui.position()  # position of mouse
-
     # go to game icon
-    if use_default:
+    if default:
         # click game icon
         pyautogui.moveTo(110, 230)
         pyautogui.doubleClick()
-        time.sleep(rand_pause(2.5))
+        rand_pause(2.5)
 
         # click start game
         pyautogui.moveTo(1410, 840)
-        time.sleep(rand_pause(15))
+        rand_pause(15)
         pyautogui.doubleClick()
-        time.sleep(rand_pause(5))
+        rand_pause(5)
 
         # go to world map
         pyautogui.moveTo(1601, 548) # click x button
         pyautogui.click()
-        time.sleep(rand_pause(.5))
+        rand_pause(.5)
         pyautogui.moveTo(1522, 855) # click world map
-        pyautogui.click(clicks=2, interval=rand_pause(.3))
+        pyautogui.click(clicks=3, interval=.3)
     else:
         # click game icon
-        pos = goto_image("icon", "images/startup/icon.PNG")
+        pos = search_loop("images/startup/icon.PNG")
         pyautogui.doubleClick(pos[0]+5, pos[1]+5)
-        time.sleep(3)
+        rand_pause(3, False)
 
         # click start game
         pos = search_loop("images/startup/game.PNG")
-        time.sleep(rand_pause(15))
+        rand_pause(15)
         pyautogui.doubleClick(pos[0]+600, pos[1]+400)
-        time.sleep(rand_pause(2))
+        rand_pause(2)
 
         # go to world map
-        pos = search_loop("images/startup/x.PNG") # click x button
-        delay_click(pos[0]+5, pos[1]+5, random=False)
-        time.sleep(rand_pause(.5))
+        pos = search_loop("images/startup/x.PNG") # find x button
+        click_and_delay(pos[0]+5, pos[1]+5, delay=.5, random=False)
         pos = search_loop("images/startup/world_map.PNG")
-        pyautogui.click(pos[0], pos[1], clicks=2, interval=rand_pause(.1))
+        pyautogui.click(pos[0], pos[1], clicks=3, interval=.3)
     
-    time.sleep(rand_pause(3))
+    rand_pause(2)
+    return pos
 
 def initialize_branches(default=False):
     """
@@ -63,19 +60,20 @@ def initialize_branches(default=False):
                    [1217, 939], [852, 779], [1009, 631]]
     
     # get outclick
-    pos = goto_image("right most branch", "images/branch/campamento.PNG")
-    pyautogui.move(70, -195)
-    pos = pyautogui.position()
-    out_pos = [pos[0], pos[1]]
+    pos = search_loop("images/branch/campamento.PNG")   # find rightmost branch
+    out_pos = [pos[0]+70, pos[1]-195]                   # store outclick position
 
     for i, name in enumerate(branch_names):
         if default:
             branches.append(Branch(name, default_pos[i]))
         else:
             path = "images/branch/" + images[i] + ".PNG"
-            pos = goto_image(images[i], path)
-            position = [pos[0]+10, pos[1]-30]
-            branches.append(Branch(name, position, out_pos))
+            pos = search_loop(path)
+            # add branch if found
+            if pos[0] != -1:
+                pyautogui.moveTo(pos[0], pos[1])
+                position = [pos[0]+10, pos[1]-30]
+                branches.append(Branch(name, position, out_pos))
     
     return branches
 
@@ -94,22 +92,26 @@ def find_disturbances(default=False):
     for i in range(6):
         # go to exploration status
         if default:
-            delay_click(843, 870, 0.1)
+            click_and_delay(843, 870, delay=0.1)
         else:
-            pos = goto_image("explore", "images/disturbance/explore.PNG")
-            delay_click(pos[0], pos[1], 0.1)
+            pos = search_loop("images/disturbance/explore.PNG")
+            # check if exploration status found
+            if pos[0] == -1:
+                print("Error: Cannnot find Exploration Status.")
+                return
+            click_and_delay(pos[0], pos[1], delay=0.5)
 
-        time.sleep(0.3)
         pos = find_dives()
+        # no disturbances found, finish find exploration
         if pos[0] == -1:
             return
 
 def find_dives():
     pos = scroll_find("images/disturbance/dive.PNG")
 
+    # dive found? --> sweep it
     if pos[0] != -1:
-        delay_click(pos[0]+580, pos[1]+10, .5)
-        time.sleep(rand_pause(3))
+        click_and_delay(pos[0]+580, pos[1]+10, delay=3)
         do_dive()
     
     return pos
@@ -118,51 +120,63 @@ def do_dive(default=False):
     global dive_count
 
     if default:
-        delay_click(1409, 933, .1, random=False) # click sweep
-        delay_click(1502, 946, .5)               # click start dive
+        click_and_delay(1409, 933, .1, random=False) # click sweep
+        click_and_delay(1502, 946, .5)               # click start dive
     else:
-        pos = goto_image("sweep", "images/disturbance/sweep.PNG")
-        delay_click(pos[0]+15, pos[1]+15, .1, random=False)
-
-        pos = goto_image("start", "images/disturbance/start_dive.PNG")
-        delay_click(pos[0], pos[1], .5)
-    
-    dive_count += 1 # increment dive count
-    time.sleep(rand_pause(150))
+        pos = search_loop("images/disturbance/sweep.PNG")
+        # only sweep if sweep button found
+        if pos[0] != -1:
+            click_and_delay(pos[0]+15, pos[1]+15, delay=.1, random=False)
+            # start dive
+            pos = search_loop("images/disturbance/start_dive.PNG")
+            if pos[0] == -1:
+                # this shouldn't happen but exit game just in case
+                exit_game()
+                return
+            click_and_delay(pos[0], pos[1], delay=150) # click and wait for dive to finish
+            dive_count += 1
 
 def exit_game(default=False):
     if default:
-        delay_click(1719, 444, .01) # exit button
+        click_and_delay(1719, 444, .01) # exit button
     else:
-        pos = search_loop("images/misc/exit.PNG", maxiter=30)
-        delay_click(pos[0]+2, pos[1]+2, 0, random=False)
+        pos = search_loop("images/misc/exit.PNG", maxiter=20)
+        pyautogui.click(pos[0]+2, pos[1]+2)
 
-def minimize_vscode(default=False):
-    pos = goto_image("minimize", "images/misc/minimize.PNG")
-    pyautogui.click()
-    time.sleep(rand_pause(.3))
-
-def automize(maxiter=20, use_default=False):
-    waiting = 2850 # 47.5 min.
-    minimize_vscode()
+def automize(maxiter=100, use_default=False):
+    waiting = 2850 # 47.5 minutes
+    minimize_windows()
     
     for i in range(maxiter):
-        run_game(use_default)
-        branches = initialize_branches(use_default)
+        pos = run_game(use_default)
+        # something went wrong with run game?
+        if pos[0] != -1:
+            print("Run game error. Trying again in 1 min.")
+            exit_game()
+            time.sleep(60)
 
+        branches = initialize_branches(use_default)
+        # check if all branches initialized
+        if len(branches) < 6:
+            print("Could not initialize all branches. Trying again in 1 min.")
+            exit_game()
+            time.sleep(60)
+
+        rand_pause(0.1)
         complete_missions(branches)
+        rand_pause(0.1)
         do_missions(branches)
 
         start = time.time()
         find_disturbances(use_default)
-        print_info(branches)
+        print_info(branches, i)
         exit_game(use_default)
         end = time.time()
 
         new_wait = waiting - (end - start)
         time.sleep(new_wait)
 
-def print_info(branches: list[Branch]):
+def print_info(branches: list[Branch], iter, save_info=False):
     global dive_count, raid_count
     ticket_count = quartz_count = 0
 
@@ -172,14 +186,15 @@ def print_info(branches: list[Branch]):
         if i.mission_type == QUARTZ:
             quartz_count += 1
 
-    # save info
-    # with open('log.csv', 'a', encoding='UTF8', newline='') as f:
-    #     writer = csv.writer(f)
-    #     data = [ticket_count, quartz_count, dive_count, raid_count]
-    #     writer.writerow(data)
+    # save dispatch information if needed
+    if save_info:
+        with open('log.csv', 'a', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            data = [ticket_count, quartz_count, dive_count, raid_count]
+            writer.writerow(data)
 
-    # print info
-    print("Dispatch Compelete")
+    # print dispatch information
+    print(f"Dispatch {iter} Complete")
 
     if dive_count > 0:
         print(f"Dives found: {dive_count}")
@@ -196,10 +211,8 @@ def print_info(branches: list[Branch]):
 
 def main():
     pyautogui.FAILSAFE = True # move mouse to upper left to abort
-    while True:
-        automize()
-        exit_game
-        time.sleep(60)
+    
+    automize()
 
     # minimize_vscode()
     # branches = initialize_branches()

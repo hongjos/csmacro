@@ -6,52 +6,30 @@ from python_imagesearch.imagesearch import *    # image detection
 QUARTZ = 1
 CONTRACT = 2
 
-def rand_pause(num):
+def rand_pause(num, random=True):
     """
-    Add a small random number between 0 and 0.5.
+    Pause for some time + a small random amount (if random is true).
     """
-    return num + random.uniform(0, 0.5)
+    rand = random.uniform(0, 0.5) if random else 0
+    time.sleep(num + rand)
 
-def goto_image(name, path):
+def click_and_delay(x, y, delay=0, random=True):
     """
-    Move mouse to some image.
-    """
-    # find image position
-    pos = imagesearch(path)
-
-    # move mouse
-    if pos[0] != -1:
-        pyautogui.moveTo(pos[0], pos[1])
-    else:
-        error_message = "Error: Can't find " + name + " image."
-        sys.exit(error_message)
-    
-    return pos
-
-def delay_click(x, y, delay=0, random=True):
-    """
-    Move mouse to (x,y) wait some time then click.
+    Move mouse to (x,y) click then wait some time.
     """
     pyautogui.moveTo(x, y)
-
-    if random:
-        time.sleep(rand_pause(delay))
-    else:
-        time.sleep(delay)
-
+    rand_pause(delay, random)
     pyautogui.click()
 
-def search_loop(path, delay=0.5, maxiter=20):
+def search_loop(path, delay=0.5, maxiter=10):
     """
-    Search for image until found
+    Search for image until found.
     """
-    for i in maxiter:
+    for i in range(maxiter):
         pos = imagesearch(path)
-
         # found image? break out of loop
         if pos[0] != -1:
             break
-
         time.sleep(delay)
 
     return pos 
@@ -66,7 +44,19 @@ def scroll_find(path):
     if pos[0] == -1:
         for i in range(6):
             pyautogui.scroll(-10)
-            time.sleep(rand_pause(0))
+            rand_pause(0)
         pos = imagesearch(path)
     
     return pos
+
+def minimize_windows(maxiter=10):
+    """
+    Minimize any current windows on the screen.
+    """
+    # there shouldn't be too many windows on the screen
+    for i in range(maxiter):
+        pos = search_loop("images/misc/minimize.PNG", maxiter=2)
+        if pos[0] != -1:
+            click_and_delay(pos[0], pos[1], delay=.3)
+        else:
+            return
