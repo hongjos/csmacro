@@ -137,6 +137,7 @@ def exit_game(default=False):
     if default:
         delay_click(1719, 444, .01) # exit button
     else:
+        pos = imagesearch("images/misc/exit.PNG")
         pos = goto_image("game", "images/misc/exit.PNG")
         delay_click(pos[0]+2, pos[1]+2, 0, random=False)
 

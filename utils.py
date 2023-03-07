@@ -41,6 +41,19 @@ def delay_click(x, y, delay, random=True):
 
     pyautogui.click()
 
+def search_loop(path, delay=0.5, maxiter=10):
+    """
+    Search for image until found
+    """
+    for i in maxiter:
+        pos = imagesearch(path)
+
+        # found image? break out of loop
+        if pos[0] != -1:
+            break
+
+    return pos 
+
 def scroll_find(path):
     """
     Find position of an image. If not there, scroll down a bit and try again.
