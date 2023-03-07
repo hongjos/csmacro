@@ -28,7 +28,7 @@ def goto_image(name, path):
     
     return pos
 
-def delay_click(x, y, delay, random=True):
+def delay_click(x, y, delay=0, random=True):
     """
     Move mouse to (x,y) wait some time then click.
     """
@@ -41,7 +41,7 @@ def delay_click(x, y, delay, random=True):
 
     pyautogui.click()
 
-def search_loop(path, delay=0.5, maxiter=10):
+def search_loop(path, delay=0.5, maxiter=20):
     """
     Search for image until found
     """
@@ -51,6 +51,8 @@ def search_loop(path, delay=0.5, maxiter=10):
         # found image? break out of loop
         if pos[0] != -1:
             break
+
+        time.sleep(delay)
 
     return pos 
 

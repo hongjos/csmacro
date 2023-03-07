@@ -34,24 +34,21 @@ def run_game(default=False):
     else:
         # click game icon
         pos = goto_image("icon", "images/startup/icon.PNG")
-        pyautogui.move(5, 5)
-        pyautogui.doubleClick()
-        time.sleep(5)
+        pyautogui.doubleClick(pos[0]+5, pos[1]+5)
+        time.sleep(3)
 
         # click start game
-        pos = goto_image("game", "images/startup/game.PNG")
+        pos = search_loop("images/startup/game.PNG")
         time.sleep(rand_pause(15))
-        pyautogui.move(600, 400)
-        pyautogui.doubleClick()
-        time.sleep(rand_pause(5))
+        pyautogui.doubleClick(pos[0]+600, pos[1]+400)
+        time.sleep(rand_pause(2))
 
         # go to world map
-        pos = goto_image("x", "images/startup/x.PNG") # click x button
-        pyautogui.move(5, 5)
-        pyautogui.click()
+        pos = search_loop("images/startup/x.PNG") # click x button
+        delay_click(pos[0]+5, pos[1]+5, random=False)
         time.sleep(rand_pause(.5))
-        pos = goto_image("world map", "images/startup/world_map.PNG")
-        pyautogui.click(clicks=2, interval=rand_pause(.1))
+        pos = search_loop("images/startup/world_map.PNG")
+        pyautogui.click(pos[0], pos[1], clicks=2, interval=rand_pause(.1))
     
     time.sleep(rand_pause(3))
 
@@ -137,14 +134,13 @@ def exit_game(default=False):
     if default:
         delay_click(1719, 444, .01) # exit button
     else:
-        pos = imagesearch("images/misc/exit.PNG")
-        pos = goto_image("game", "images/misc/exit.PNG")
+        pos = search_loop("images/misc/exit.PNG", maxiter=30)
         delay_click(pos[0]+2, pos[1]+2, 0, random=False)
 
 def minimize_vscode(default=False):
     pos = goto_image("minimize", "images/misc/minimize.PNG")
     pyautogui.click()
-    rand_pause(.3)
+    time.sleep(rand_pause(.3))
 
 def automize(maxiter=20, use_default=False):
     waiting = 2850 # 47.5 min.
