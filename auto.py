@@ -166,17 +166,20 @@ def automize(maxiter=100, use_default=False):
         complete_missions(branches)
         rand_pause(0.1)
         do_missions(branches)
+        # get time finished branches
+        t = time.localtime()
+        curr_time = time.strftime("%H:%M:%S", t)
 
         start = time.time()
         find_disturbances(use_default)
-        print_info(branches, i)
+        print_info(branches, i, curr_time)
         exit_game(use_default)
         end = time.time()
 
         new_wait = waiting - (end - start)
         time.sleep(new_wait)
 
-def print_info(branches: list[Branch], iter, save_info=False):
+def print_info(branches: list[Branch], iter, time, save_info=False):
     global dive_count, raid_count
     ticket_count = quartz_count = 0
 
@@ -194,7 +197,7 @@ def print_info(branches: list[Branch], iter, save_info=False):
             writer.writerow(data)
 
     # print dispatch information
-    print(f"Dispatch {iter} Complete")
+    print(f"Dispatch {iter} Complete: {time}")
 
     if dive_count > 0:
         print(f"Dives found: {dive_count}")
