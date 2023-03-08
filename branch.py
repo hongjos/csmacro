@@ -16,7 +16,7 @@ class Branch:
             return
         
         # click on branch
-        click_and_delay(self.pos[0], self.pos[1], delay=0.2, random=False)
+        click_and_delay(self.pos[0], self.pos[1], delay=0.2, rand=False)
 
         # check if still ongoing mission
         if self.still_ongoing():
@@ -41,7 +41,7 @@ class Branch:
     def complete_mission(self):
         # click on branch
         self.mission_type = 0
-        click_and_delay(self.pos[0], self.pos[1], 0.2, random=False)
+        click_and_delay(self.pos[0], self.pos[1], 0.2, rand=False)
 
         # check if still ongoing mission
         if self.still_ongoing():

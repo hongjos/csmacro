@@ -42,7 +42,7 @@ def run_game(default=False):
 
         # go to world map
         pos = search_loop("images/startup/x.PNG") # find x button
-        click_and_delay(pos[0]+5, pos[1]+5, delay=.5, random=False)
+        click_and_delay(pos[0]+5, pos[1]+5, delay=.5, rand=False)
         pos = search_loop("images/startup/world_map.PNG")
         pyautogui.click(pos[0], pos[1], clicks=3, interval=.3)
     
@@ -120,13 +120,13 @@ def do_dive(default=False):
     global dive_count
 
     if default:
-        click_and_delay(1409, 933, .1, random=False) # click sweep
+        click_and_delay(1409, 933, .1, rand=False) # click sweep
         click_and_delay(1502, 946, .5)               # click start dive
     else:
         pos = search_loop("images/disturbance/sweep.PNG")
         # only sweep if sweep button found
         if pos[0] != -1:
-            click_and_delay(pos[0]+15, pos[1]+15, delay=.1, random=False)
+            click_and_delay(pos[0]+15, pos[1]+15, delay=.1, rand=False)
             # start dive
             pos = search_loop("images/disturbance/start_dive.PNG")
             if pos[0] == -1:

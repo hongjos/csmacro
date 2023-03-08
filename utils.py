@@ -6,19 +6,19 @@ from python_imagesearch.imagesearch import *    # image detection
 QUARTZ = 1
 CONTRACT = 2
 
-def rand_pause(num, random=True):
+def rand_pause(num, rand=True):
     """
     Pause for some time + a small random amount (if random is true).
     """
-    rand = random.uniform(0, 0.5) if random else 0
-    time.sleep(num + rand)
+    add = random.uniform(0, 0.5) if rand else 0
+    time.sleep(num + add)
 
-def click_and_delay(x, y, delay=0, random=True):
+def click_and_delay(x, y, delay=0, rand=True):
     """
     Move mouse to (x,y) click then wait some time.
     """
     pyautogui.moveTo(x, y)
-    rand_pause(delay, random)
+    rand_pause(delay, rand)
     pyautogui.click()
 
 def search_loop(path, delay=0.5, maxiter=10):
