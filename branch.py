@@ -8,8 +8,13 @@ class Branch:
         self.out_pos = out_pos # where to click to complete dispatch
 
         self.mission_type = 0
+        self.in_progress = False
     
     def start_dispatch(self):
+        # if mission in progress, no need to do anything
+        if self.in_progress:
+            return
+        
         # click on branch
         click_and_delay(self.pos[0], self.pos[1], delay=0.2, random=False)
 
@@ -40,12 +45,14 @@ class Branch:
 
         # check if still ongoing mission
         if self.still_ongoing():
-           rand_pause(0.3) 
+           rand_pause(0.3)
+           self.in_progress = True 
            return
 
         # click out of rewards
         pyautogui.moveTo(self.out_pos[0], self.out_pos[1])
         pyautogui.click(clicks=15, interval=0.3)
+        self.in_progress = False
         time.sleep(1)
 
     def choose_mission(self):
