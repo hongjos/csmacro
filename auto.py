@@ -144,13 +144,14 @@ def exit_game(default=False):
         pyautogui.click(pos[0]+2, pos[1]+2)
 
 def automize(maxiter=100, use_default=False):
+    totals = [0, 0, 0] # total dives, contracts, quartz found
     waiting = 2850 # 47.5 minutes
-    minimize_windows()
     
     for i in range(maxiter):
+        minimize_windows()
         pos = run_game(use_default)
         # something went wrong with run game?
-        if pos[0] != -1:
+        if pos[0] == -1:
             print("Run game error. Trying again in 1 min.")
             exit_game()
             time.sleep(60)
@@ -172,14 +173,14 @@ def automize(maxiter=100, use_default=False):
 
         start = time.time()
         find_disturbances(use_default)
-        print_info(branches, i, curr_time)
+        print_info(branches, i, curr_time, totals)
         exit_game(use_default)
         end = time.time()
 
         new_wait = waiting - (end - start)
         time.sleep(new_wait)
 
-def print_info(branches: list[Branch], iter, time, save_info=False):
+def print_info(branches: list[Branch], iter, time, totals, save_info=False):
     global dive_count, raid_count
     ticket_count = quartz_count = 0
 
@@ -195,6 +196,11 @@ def print_info(branches: list[Branch], iter, time, save_info=False):
             writer = csv.writer(f)
             data = [ticket_count, quartz_count, dive_count, raid_count]
             writer.writerow(data)
+    
+    # update totals
+    totals[0] += dive_count
+    totals[1] += ticket_count
+    totals[2] += quartz_count 
 
     # print dispatch information
     print(f"Dispatch {iter} Complete: {time}")
@@ -207,6 +213,9 @@ def print_info(branches: list[Branch], iter, time, save_info=False):
         print(f"Employee Contracts found: {ticket_count}")
     if quartz_count > 0:
         print(f"Quartz found: {quartz_count*60}")
+    
+    print(f"Total Dives: {totals[0]}\t\tApprox. Contracts: {totals[1]*0.7}\t \
+          Approx. Quartz: {totals[2]*0.7}")
     print("----")
 
     dive_count = raid_count = 0
