@@ -38,14 +38,14 @@ def scroll_find(path):
     """
     Find position of an image. If not there, scroll down a bit and try again.
     """
-    pos = imagesearch(path)
+    pos = search_loop(path, delay=0.2, maxiter=2)
 
     # not found? scroll down
     if pos[0] == -1:
         for i in range(6):
             pyautogui.scroll(-10)
             rand_pause(0)
-        pos = imagesearch(path)
+        pos = search_loop(path, delay=0.2, maxiter=2)
     
     return pos
 
