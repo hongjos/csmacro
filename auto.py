@@ -144,10 +144,11 @@ def exit_game(default=False):
         pyautogui.click(pos[0]+2, pos[1]+2)
 
 def automize(maxiter=100, use_default=False):
-    totals = [0, 0, 0] # total dives, contracts, quartz found
-    waiting = 2850 # 47.5 minutes
-    
-    for i in range(maxiter):
+    totals = [0, 0, 0]  # total dives, contracts, quartz found
+    waiting = 2850      # 47.5 minutes
+    i = 1
+
+    while i <= maxiter:
         minimize_windows()
         pos = run_game(use_default)
         # something went wrong with run game?
@@ -155,32 +156,40 @@ def automize(maxiter=100, use_default=False):
             print("Run game error. Trying again in 1 min.")
             exit_game()
             time.sleep(60)
+            continue
 
+        rand_pause(2)
         branches = initialize_branches(use_default)
         # check if all branches initialized
         if len(branches) < 6:
             print("Could not initialize all branches. Trying again in 1 min.")
             exit_game()
             time.sleep(60)
+            continue
 
         rand_pause(0.1)
         complete_missions(branches)
         rand_pause(0.1)
         do_missions(branches)
         # get time finished branches
-        t = time.localtime()
-        curr_time = time.strftime("%H:%M:%S", t)
+        t = datetime.datetime.now()
+        curr_time = t.strftime("%H:%M:%S")
 
         start = time.time()
         find_disturbances(use_default)
-        print_info(branches, i, curr_time, totals)
         exit_game(use_default)
         end = time.time()
 
-        new_wait = waiting - (end - start)
-        time.sleep(new_wait)
+        wait_time = waiting - (end - start)
+        time.sleep(wait_time)
+        # get time of next dispatch start
+        t_next = t + datetime.timedelta(seconds=wait_time)
+        next_time = t_next.strftime("%H:%M:%S")
+        # end of current dispatch: print info
+        print_info(branches, i, curr_time, next_time, totals)
+        i += 1
 
-def print_info(branches: list[Branch], iter, time, totals, save_info=False):
+def print_info(branches: list[Branch], iter, time_a, time_b, totals, save_info=False):
     global dive_count, raid_count
     ticket_count = quartz_count = 0
 
@@ -203,7 +212,7 @@ def print_info(branches: list[Branch], iter, time, totals, save_info=False):
     totals[2] += quartz_count 
 
     # print dispatch information
-    print(f"Dispatch {iter} Complete: {time}")
+    print(f"Dispatch {iter} Complete: {time_a}")
 
     if dive_count > 0:
         print(f"Dives found: {dive_count}")
@@ -214,19 +223,20 @@ def print_info(branches: list[Branch], iter, time, totals, save_info=False):
     if quartz_count > 0:
         print(f"Quartz found: {quartz_count*60}")
     
-    print(f"Total Dives: {totals[0]}\t\tApprox. Contracts: {totals[1]*0.7}\t \
-          Approx. Quartz: {totals[2]*0.7}")
+    print(f"Total Dives: {totals[0]}\t\tContracts: {totals[1]}\tQuartz: {totals[2]}")
+    print(f"Approximate Next Dispatch: {time_b}")
     print("----")
 
     dive_count = raid_count = 0
 
 
 def main():
-    pyautogui.FAILSAFE = True # move mouse to upper left to abort
+    pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
     automize()
 
-    # minimize_vscode()
+    # minimize_windows()
+    # pos = imagesearch("images/branch/adcg1.PNG")
     # branches = initialize_branches()
     # complete_missions(branches)
     # do_missions(branches)

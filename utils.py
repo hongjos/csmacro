@@ -1,5 +1,7 @@
 import sys
 import random
+import time
+import datetime
 import pyautogui                                # mouse clicking
 from python_imagesearch.imagesearch import *    # image detection
 
@@ -18,15 +20,15 @@ def click_and_delay(x, y, delay=0, rand=True):
     Move mouse to (x,y) click then wait some time.
     """
     pyautogui.moveTo(x, y)
-    rand_pause(delay, rand)
     pyautogui.click()
+    rand_pause(delay, rand)
 
 def search_loop(path, delay=0.5, maxiter=10):
     """
     Search for image until found.
     """
     for i in range(maxiter):
-        pos = imagesearch(path)
+        pos = imagesearch(path, precision=0.7)
         # found image? break out of loop
         if pos[0] != -1:
             break
