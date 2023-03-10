@@ -43,6 +43,15 @@ class Branch:
         self.mission_type = 0
         click_and_delay(self.pos[0], self.pos[1], 0.2, rand=False)
 
+        # check if branch isn't doing anything
+        p = imagesearch("images/dispatch/replace.PNG")
+        if p[0] != -1:
+            p = search_loop("images/dispatch/return.PNG") # go back
+            click_and_delay(p[0], p[1], delay=0.1)
+            self.start_dispatch() # do mission
+            self.in_progress = True
+            return 
+
         # check if still ongoing mission
         if self.still_ongoing():
            rand_pause(0.3)
@@ -94,5 +103,3 @@ class Branch:
         else:
             return False
             
-
-      
