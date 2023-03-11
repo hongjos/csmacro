@@ -173,23 +173,19 @@ def automize(maxiter=100, use_default=False):
         do_missions(branches)
         # get time finished branches
         t = datetime.datetime.now()
-        curr_time = t.strftime("%H:%M:%S")
 
         start = time.time()
         find_disturbances(use_default)
         exit_game(use_default)
+        print_info(branches, i, t, totals)
         end = time.time()
 
+        # wait until next dispatch
         wait_time = waiting - (end - start)
-        time.sleep(wait_time)
-        # get time of next dispatch start
-        t_next = t + datetime.timedelta(seconds=wait_time)
-        next_time = t_next.strftime("%H:%M:%S")
-        # end of current dispatch: print info
-        print_info(branches, i, curr_time, next_time, totals)
+        time.sleep(wait_time) 
         i += 1
 
-def print_info(branches: list[Branch], iter, time_a, time_b, totals, save_info=False):
+def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=False):
     global dive_count, raid_count
     ticket_count = quartz_count = 0
 
@@ -209,23 +205,34 @@ def print_info(branches: list[Branch], iter, time_a, time_b, totals, save_info=F
     # update totals
     totals[0] += dive_count
     totals[1] += ticket_count
-    totals[2] += quartz_count 
+    totals[2] += quartz_count
+
+    # get string of current time and time of next next dispatch
+    end_time = curr_time.strftime("%H:%M:%S")
+    t_next = curr_time + datetime.timedelta(seconds=2850) # 47.5 min
+    next_time = t_next.strftime("%H:%M:%S")
 
     # print dispatch information
-    print(f"Dispatch {iter} Complete: {time_a}")
+    info = ""
+    info += f"Dispatch {iter} Complete: {end_time}\n"
 
     if dive_count > 0:
-        print(f"Dives found: {dive_count}")
+        info += f"Dives found: {dive_count}\n"
     if raid_count > 0:
-        print(f"Raids found: {raid_count}")
+        info += f"Raids found: {raid_count}\n"
     if ticket_count > 0:
-        print(f"Employee Contracts found: {ticket_count}")
+        info += f"Employee Contracts found: {ticket_count}\n"
     if quartz_count > 0:
-        print(f"Quartz found: {quartz_count*60}")
+        info += f"Quartz found: {quartz_count*60}\n"
     
-    print(f"Total Dives: {totals[0]}\t\tContracts: {totals[1]}\tQuartz: {totals[2]}")
-    print(f"Approximate Next Dispatch: {time_b}")
-    print("----")
+    info += f"Total Dives: {totals[0]}\t Contracts: {totals[1]}\tQuartz: {totals[2]*60}\n"
+    info += f"Approximate Next Dispatch: {next_time}\n"
+
+    if send_email:
+        send_email(info)
+
+    info += "-----\n"
+    print(info)
 
     dive_count = raid_count = 0
 

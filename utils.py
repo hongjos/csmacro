@@ -2,6 +2,7 @@ import sys
 import random
 import time
 import datetime
+import smtplib, ssl
 import pyautogui                                # mouse clicking
 from python_imagesearch.imagesearch import *    # image detection
 
@@ -62,3 +63,22 @@ def minimize_windows(maxiter=10):
             click_and_delay(pos[0], pos[1], delay=.3)
         else:
             return
+
+def send_mail(text, email="waterabottle@gmail.com"):
+    """
+    Send some text to an email.
+    """
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "waterabottle@gmail.com"  
+    receiver_email = email
+    password = "dpjklrcricpjjlzt"
+
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+            server.login(sender_email, password)
+            server.sendmail(sender_email, receiver_email, text)
+    except Exception:
+        print("Email failed to send.")
+        pass
