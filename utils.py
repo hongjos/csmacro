@@ -64,6 +64,16 @@ def minimize_windows(maxiter=10):
         else:
             return
 
+def no_internet():
+    """
+    Returns true if there is no internet connection.
+    """
+    pos = imagesearch("images/misc/no_internet.PNG")
+    if pos[0] != -1:
+        print("No internet connection.")
+        return True
+    return False
+
 def send_mail(text, email="waterabottle@gmail.com"):
     """
     Send some text to an email.

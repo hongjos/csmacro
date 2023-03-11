@@ -143,28 +143,33 @@ def exit_game(default=False):
         pos = search_loop("images/misc/exit.PNG", maxiter=20)
         pyautogui.click(pos[0]+2, pos[1]+2)
 
-def automize(maxiter=100, use_default=False):
+def automize(maxiter=100, use_default=False, wait_error=60):
     totals = [0, 0, 0]  # total dives, contracts, quartz found
     waiting = 2850      # 47.5 minutes
     i = 1
 
     while i <= maxiter:
+        # check for internet connection
+        if no_internet():
+            time.sleep(wait_error)
+            continue
+
         minimize_windows()
         pos = run_game(use_default)
         # something went wrong with run game?
         if pos[0] == -1:
-            print("Run game error. Trying again in 1 min.")
+            print("Run game error.")
             exit_game()
-            time.sleep(60)
+            time.sleep(wait_error)
             continue
 
         rand_pause(2)
         branches = initialize_branches(use_default)
         # check if all branches initialized
         if len(branches) < 6:
-            print("Could not initialize all branches. Trying again in 1 min.")
+            print("Could not initialize all branches.")
             exit_game()
-            time.sleep(60)
+            time.sleep(wait_error)
             continue
 
         rand_pause(0.1)
