@@ -85,7 +85,18 @@ def complete_missions(branches: list[Branch]):
     for branch in branches:
         branch.complete_mission()
 
-def find_disturbances(default=False):
+def complete_raids():
+    pos = search_loop("images/disturbance/explore.PNG")         # exploration status
+    click_and_delay(pos[0], pos[1], delay=0.5)
+    pos = search_loop("images/disturbance/raid_history.PNG")    # click raid history
+    click_and_delay(pos[0], pos[1], delay=0.5)
+    click_and_delay(pos[0]+710, pos[1]+211, delay=0)            # click complete all
+    pyautogui.moveTo(pos[0]+855, pos[1]-80)        
+    pyautogui.click(clicks=5, interval=0.3)
+    pos = search_loop("images/disturbance/explore_exit.PNG")
+    click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              # exit exploration
+
+def find_disturbances(default=False, do_raids=True):
     """
     Search for dives/raids until there are no more. 
     """
@@ -102,12 +113,35 @@ def find_disturbances(default=False):
             click_and_delay(pos[0], pos[1], delay=0.5)
 
         pos = find_dives()
-        # no disturbances found, finish find exploration
+        # no dives found? search for raids
+        if pos[0] == -1:
+            pos = raid_support(do_raids)
+        # no disturbances found? finish find exploration
         if pos[0] == -1:
             return
 
+def raid_support(do_raid):
+    global raid_count
+    pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.8)
+
+    # raid found? --> support request or delete
+    if pos[0] != -1:
+        if do_raid:
+            click_and_delay(pos[0]+570, pos[1]+40, delay=.5)        # click go
+            pos = search_loop("images/disturbance/support_req.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)               # support request
+            pos = search_loop("images/disturbance/raid_ok.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)               # confirm
+            pos = search_loop("images/dispatch/return.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)               # return
+        else:
+           click_and_delay(pos[0]+570, pos[1], delay=.5)            # click delete
+        raid_count += 1 
+    
+    return pos
+
 def find_dives():
-    pos = scroll_find("images/disturbance/dive.PNG")
+    pos = search_loop("images/disturbance/dive.PNG", delay=0.2, maxiter=2)
 
     # dive found? --> sweep it
     if pos[0] != -1:
@@ -145,7 +179,7 @@ def exit_game(default=False):
 
 def automize(maxiter=100, use_default=False, wait_error=60):
     totals = [0, 0, 0]  # total dives, contracts, quartz found
-    waiting = 2850      # 47.5 minutes
+    waiting = 2845      # 47 min. 25 sec.
     i = 1
 
     while i <= maxiter:
@@ -163,7 +197,7 @@ def automize(maxiter=100, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
-        rand_pause(2)
+        rand_pause(.5)
         branches = initialize_branches(use_default)
         # check if all branches initialized
         if len(branches) < 6:
@@ -172,7 +206,7 @@ def automize(maxiter=100, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
-        rand_pause(0.1)
+        complete_raids()
         complete_missions(branches)
         rand_pause(0.1)
         do_missions(branches)
@@ -234,7 +268,8 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
     info += f"Approximate Next Dispatch: {next_time}\n"
 
     if send_email:
-        send_email(info)
+        text = "\n" + info
+        send_mail(text)
 
     info += "-----\n"
     print(info)
