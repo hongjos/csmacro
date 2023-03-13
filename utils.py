@@ -11,7 +11,7 @@ CONTRACT = 2
 
 def found_position(pos):
     """
-    Returns true if found position.
+    Returns true if the position given is found (not -1).
     """
     if pos[0] != -1:
         return True
@@ -40,7 +40,7 @@ def search_loop(path, delay=0.5, maxiter=10, accuracy=0.7):
     for i in range(maxiter):
         pos = imagesearch(path, precision=accuracy)
         # found image? break out of loop
-        if pos[0] != -1:
+        if found_position(pos):
             break
         time.sleep(delay)
 
@@ -52,8 +52,12 @@ def minimize_windows(maxiter=10):
     """
     # there shouldn't be too many windows on the screen
     for i in range(maxiter):
-        pos = search_loop("images/misc/minimize.PNG", maxiter=2)
-        if pos[0] != -1:
+        pos = search_loop("images/misc/cmd_min.PNG", maxiter=2)         # cmd prompt
+
+        if not found_position(pos):
+            pos = search_loop("images/misc/minimize.PNG", maxiter=2)    # vs code  
+
+        if found_position(pos):
             click_and_delay(pos[0], pos[1], delay=.3)
         else:
             return
@@ -63,7 +67,7 @@ def no_internet():
     Returns true if there is no internet connection.
     """
     pos = imagesearch("images/misc/no_internet.PNG")
-    if pos[0] != -1:
+    if found_position(pos):
         print("No internet connection.")
         return True
     return False

@@ -70,7 +70,7 @@ def initialize_branches(default=False):
             path = "images/branch/" + images[i] + ".PNG"
             pos = search_loop(path)
             # add branch if found
-            if pos[0] != -1:
+            if found_position(pos):
                 pyautogui.moveTo(pos[0], pos[1])
                 position = [pos[0]+10, pos[1]-30]
                 branches.append(Branch(name, position, out_pos))
@@ -107,17 +107,17 @@ def find_disturbances(default=False, do_raids=True):
         else:
             pos = search_loop("images/disturbance/explore.PNG")
             # check if exploration status found
-            if pos[0] == -1:
+            if found_position(pos):
                 print("Error: Cannnot find Exploration Status.")
                 return
             click_and_delay(pos[0], pos[1], delay=0.5)
 
         pos = find_dives()
         # no dives found? search for raids
-        if pos[0] == -1:
+        if not found_position(pos):
             pos = raid_support(do_raids)
         # no disturbances found? finish find exploration
-        if pos[0] == -1:
+        if not found_position(pos):
             return
 
 def raid_support(do_raid):
@@ -125,7 +125,7 @@ def raid_support(do_raid):
     pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.8)
 
     # raid found? --> support request or delete
-    if pos[0] != -1:
+    if found_position(pos):
         if do_raid:
             click_and_delay(pos[0]+570, pos[1]+40, delay=.5)        # click go
             pos = search_loop("images/disturbance/support_req.PNG")
@@ -144,7 +144,7 @@ def find_dives():
     pos = search_loop("images/disturbance/dive.PNG", delay=0.2, maxiter=2)
 
     # dive found? --> sweep it
-    if pos[0] != -1:
+    if found_position(pos):
         click_and_delay(pos[0]+580, pos[1]+10, delay=3)
         do_dive()
     
@@ -159,11 +159,11 @@ def do_dive(default=False):
     else:
         pos = search_loop("images/disturbance/sweep.PNG")
         # only sweep if sweep button found
-        if pos[0] != -1:
+        if found_position(pos):
             click_and_delay(pos[0]+15, pos[1]+15, delay=.1, rand=False)
             # start dive
             pos = search_loop("images/disturbance/start_dive.PNG")
-            if pos[0] == -1:
+            if not found_position(pos):
                 # this shouldn't happen but exit game just in case
                 exit_game()
                 return
@@ -191,7 +191,7 @@ def automize(maxiter=100, use_default=False, wait_error=60):
         minimize_windows()
         pos = run_game(use_default)
         # something went wrong with run game?
-        if pos[0] == -1:
+        if not found_position(pos):
             print("Run game error.")
             exit_game()
             time.sleep(wait_error)

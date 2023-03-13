@@ -45,7 +45,7 @@ class Branch:
 
         # check if branch isn't doing anything
         p = imagesearch("images/dispatch/replace.PNG")
-        if p[0] != -1:
+        if found_position(p):
             p = search_loop("images/dispatch/return.PNG") # go back
             click_and_delay(p[0], p[1], delay=0.1)
             self.start_dispatch() # do mission
@@ -76,13 +76,13 @@ class Branch:
 
         # employee contract mission found?
         p = imagesearch("images/dispatch/contract.PNG")
-        if p[0] != -1:
+        if found_position(p):
             click_and_delay(p[0], p[1]-50, delay=0)
             self.mission_type = CONTRACT
             return
         # quartz mission found?
         p = imagesearch("images/dispatch/quartz.PNG")
-        if p[0] != -1:
+        if found_position(p):
             click_and_delay(p[0], p[1]-50, delay=0)
             self.mission_type = QUARTZ
             return
@@ -96,7 +96,7 @@ class Branch:
         p = imagesearch("images/dispatch/ongoing.PNG")
         
         # if still ongoing, return
-        if p[0] != -1:
+        if found_position(p):
             p = search_loop("images/dispatch/return.PNG")
             click_and_delay(p[0], p[1], delay=0)
             return True
