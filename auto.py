@@ -96,10 +96,12 @@ def complete_raids():
     pos = search_loop("images/disturbance/explore_exit.PNG")
     click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              # exit exploration
 
-def find_disturbances(default=False, do_raids=True):
+def find_disturbances(default=False, do_raids=True, sweep=True):
     """
     Search for dives/raids until there are no more. 
     """
+    global dive_count
+
     for i in range(6):
         # go to exploration status
         if default:
@@ -107,22 +109,27 @@ def find_disturbances(default=False, do_raids=True):
         else:
             pos = search_loop("images/disturbance/explore.PNG")
             # check if exploration status found
-            if found_position(pos):
+            if not found_position(pos):
                 print("Error: Cannnot find Exploration Status.")
                 return
             click_and_delay(pos[0], pos[1], delay=0.5)
 
-        pos = find_dives()
-        # no dives found? search for raids
+        # search for raids
+        pos = raid_support(do_raids)
+        # no raids found? search for dives
         if not found_position(pos):
-            pos = raid_support(do_raids)
+            # if not sweeping, do a maximum of 3 dives
+            if not sweep and dive_count >= 3:
+                pos = [-1, -1]
+            else:
+                pos = find_dives(sweep)
         # no disturbances found? finish find exploration
         if not found_position(pos):
             return
 
 def raid_support(do_raid):
     global raid_count
-    pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.8)
+    pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.85)
 
     # raid found? --> support request or delete
     if found_position(pos):
@@ -140,35 +147,47 @@ def raid_support(do_raid):
     
     return pos
 
-def find_dives():
+def find_dives(sweep):
     pos = search_loop("images/disturbance/dive.PNG", delay=0.2, maxiter=2)
 
     # dive found? --> sweep it
     if found_position(pos):
         click_and_delay(pos[0]+580, pos[1]+10, delay=3)
-        do_dive()
+        do_dive(sweep_dive=sweep)
     
     return pos
 
-def do_dive(default=False):
+def do_dive(default=False, sweep_dive=True):
     global dive_count
 
     if default:
         click_and_delay(1409, 933, .1, rand=False) # click sweep
         click_and_delay(1502, 946, .5)               # click start dive
     else:
-        pos = search_loop("images/disturbance/sweep.PNG")
-        # only sweep if sweep button found
-        if found_position(pos):
-            click_and_delay(pos[0]+15, pos[1]+15, delay=.1, rand=False)
-            # start dive
-            pos = search_loop("images/disturbance/start_dive.PNG")
+        if sweep_dive:
+            pos = search_loop("images/disturbance/sweep.PNG")
+            # only sweep if sweep button found
+            if found_position(pos):
+                click_and_delay(pos[0]+15, pos[1]+15, delay=.5, rand=False)
+                # start dive
+                pos = search_loop("images/disturbance/start_dive.PNG")
             if not found_position(pos):
                 # this shouldn't happen but exit game just in case
                 exit_game()
                 return
             click_and_delay(pos[0], pos[1], delay=150) # click and wait for dive to finish
-            dive_count += 1
+        else:
+            pos = search_loop("images/disturbance/start_dive.PNG")
+            click_and_delay(pos[0], pos[1], delay=720) # click and wait for dive to finish
+        
+        # make sure dive is finished
+        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter= 40)
+        # dive not complete? exit --> probably shouldn't happen
+        if not found_position(pos):
+            print("dive error")
+            exit_game()
+
+        dive_count += 1
 
 def exit_game(default=False):
     if default:
@@ -181,6 +200,8 @@ def automize(maxiter=100, use_default=False, wait_error=60):
     totals = [0, 0, 0]  # total dives, contracts, quartz found
     waiting = 2845      # 47 min. 25 sec.
     i = 1
+
+    time.sleep(0.5)
 
     while i <= maxiter:
         # check for internet connection
@@ -214,8 +235,8 @@ def automize(maxiter=100, use_default=False, wait_error=60):
         t = datetime.datetime.now()
 
         start = time.time()
-        find_disturbances(use_default)
-        exit_game(use_default)
+        find_disturbances(sweep=False)
+        exit_game()
         print_info(branches, i, t, totals)
         end = time.time()
 
@@ -281,7 +302,9 @@ def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
     automize()
-
+    # pos = search_loop("images/dispatch/quartz2.PNG", delay=0.2, maxiter=2, accuracy=0.9)
+    # print(pos)
+    # pyautogui.moveTo(pos)
     # minimize_windows()
     # pos = imagesearch("images/branch/adcg1.PNG")
     # branches = initialize_branches()

@@ -81,7 +81,7 @@ class Branch:
             self.mission_type = CONTRACT
             return
         # quartz mission found?
-        p = imagesearch("images/dispatch/quartz.PNG")
+        p = imagesearch("images/dispatch/quartz2.PNG", precision=0.9)
         if found_position(p):
             click_and_delay(p[0], p[1]-50, delay=0)
             self.mission_type = QUARTZ
