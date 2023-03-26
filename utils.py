@@ -1,4 +1,5 @@
 import sys
+import os
 import random
 import time
 import datetime
@@ -8,6 +9,7 @@ from python_imagesearch.imagesearch import *    # image detection
 
 QUARTZ = 1
 CONTRACT = 2
+SIM = 3
 
 def found_position(pos):
     """
@@ -90,3 +92,9 @@ def send_mail(text, email="waterabottle@gmail.com"):
     except Exception:
         print("Email failed to send.")
         pass
+
+def shut_down():
+    """
+    Shut down the computer.
+    """
+    os.system('shutdown -s -t 0')

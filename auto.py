@@ -37,6 +37,10 @@ def run_game(default=False):
         # click start game
         pos = search_loop("images/startup/game.PNG")
         rand_pause(15)
+        update = imagesearch("images/dispatch/ok.PNG")
+        if found_position(update):
+            pyautogui.doubleClick(update[0], update[1])
+            time.sleep(300)
         pyautogui.doubleClick(pos[0]+600, pos[1]+400)
         rand_pause(2)
 
@@ -196,12 +200,13 @@ def exit_game(default=False):
         pos = search_loop("images/misc/exit.PNG", maxiter=20)
         pyautogui.click(pos[0]+2, pos[1]+2)
 
-def automize(maxiter=100, use_default=False, wait_error=60):
-    totals = [0, 0, 0]  # total dives, contracts, quartz found
-    waiting = 2845      # 47 min. 25 sec.
-    i = 1
+def automize(maxiter=20, use_default=False, wait_error=60):
+    totals = [0, 0, 0, 0]   # total dives, contracts, simulations, quartz found
+    waiting = 2845          # 47 min. 25 sec.
+    i = 1                   # dive iteration
 
-    time.sleep(0.5)
+    # buffer time
+    time.sleep(.5)
 
     while i <= maxiter:
         # check for internet connection
@@ -209,7 +214,10 @@ def automize(maxiter=100, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
+        # minimize any open windows
         minimize_windows()
+
+        # run the game
         pos = run_game(use_default)
         # something went wrong with run game?
         if not found_position(pos):
@@ -218,6 +226,7 @@ def automize(maxiter=100, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
+        # initialize all branches
         rand_pause(.5)
         branches = initialize_branches(use_default)
         # check if all branches initialized
@@ -227,16 +236,23 @@ def automize(maxiter=100, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
+        # get dispatch rewards
         complete_raids()
         complete_missions(branches)
         rand_pause(0.1)
-        do_missions(branches)
+        # start new dispatch
+        if i == maxiter:
+            do_missions(branches, last=True)
+        else:
+            do_missions(branches)
         # get time finished branches
         t = datetime.datetime.now()
 
+        # complete any disturbances found
         start = time.time()
         find_disturbances(sweep=False)
         exit_game()
+        # print dispatch information
         print_info(branches, i, t, totals)
         end = time.time()
 
@@ -245,13 +261,18 @@ def automize(maxiter=100, use_default=False, wait_error=60):
         time.sleep(wait_time) 
         i += 1
 
+    # shut down the pc
+    shut_down()
+
 def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=False):
     global dive_count, raid_count
-    ticket_count = quartz_count = 0
+    ticket_count = sim_count = quartz_count = 0
 
     for i in branches:
         if i.mission_type == CONTRACT:
             ticket_count += 1
+        if i.mission_type == SIM:
+            sim_count += 1
         if i.mission_type == QUARTZ:
             quartz_count += 1
 
@@ -265,7 +286,8 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
     # update totals
     totals[0] += dive_count
     totals[1] += ticket_count
-    totals[2] += quartz_count
+    totals[2] += sim_count
+    totals[3] += quartz_count
 
     # get string of current time and time of next next dispatch
     end_time = curr_time.strftime("%H:%M:%S")
@@ -282,12 +304,15 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
         info += f"Raids found: {raid_count}\n"
     if ticket_count > 0:
         info += f"Employee Contracts found: {ticket_count}\n"
+    if sim_count > 0:
+        info += f"Simulation Permits found: {sim_count}\n"
     if quartz_count > 0:
         info += f"Quartz found: {quartz_count*60}\n"
     
-    info += f"Total Dives: {totals[0]}\t Contracts: {totals[1]}\tQuartz: {totals[2]*60}\n"
+    info += f"Total Dives: {totals[0]}\t Contracts: {totals[1]}\tPermits: {totals[2]}\n"
     info += f"Approximate Next Dispatch: {next_time}\n"
 
+    # send info email
     if send_email:
         text = "\n" + info
         send_mail(text)
@@ -302,7 +327,8 @@ def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
     automize()
-    # pos = search_loop("images/dispatch/quartz2.PNG", delay=0.2, maxiter=2, accuracy=0.9)
+
+    # pos = search_loop("images/dispatch/ongoing.PNG", delay=0.2, maxiter=2, accuracy=0.85)
     # print(pos)
     # pyautogui.moveTo(pos)
     # minimize_windows()

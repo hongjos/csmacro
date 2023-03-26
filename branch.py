@@ -10,7 +10,7 @@ class Branch:
         self.mission_type = 0
         self.in_progress = False
     
-    def start_dispatch(self):
+    def start_dispatch(self, last=False):
         # if mission in progress, no need to do anything
         if self.in_progress:
             return
@@ -24,7 +24,7 @@ class Branch:
            return 
         
         # choose mission
-        self.choose_mission()
+        self.choose_mission(last)
 
         # do mission
         if self.default:
@@ -64,11 +64,11 @@ class Branch:
         self.in_progress = False
         time.sleep(1)
 
-    def choose_mission(self):
+    def choose_mission(self, last=False):
         """
         Choose mission with priority (high to low): blue tix, 60 quartz, 1 hr.
         """
-        # move to default mission
+        # move to default (1 hr.) mission
         p = search_loop("images/dispatch/replace.PNG")
         pyautogui.moveTo(p[0]+290, p[1]-280)
         rand_pause(0.1)
@@ -81,19 +81,23 @@ class Branch:
             self.mission_type = CONTRACT
             return
         # quartz mission found?
-        p = imagesearch("images/dispatch/quartz2.PNG", precision=0.9)
+        p = imagesearch("images/dispatch/quartz2.PNG", precision=0.95)
         if found_position(p):
             click_and_delay(p[0], p[1]-50, delay=0)
             self.mission_type = QUARTZ
             return
-        # click default
+        
+        # click default mission
+        if last:
+            # move to 8 hr. mission
+            pyautogui.click()
         pyautogui.click()
 
     def still_ongoing(self):
         """
         Check if dispatch is still ongoing.
         """    
-        p = imagesearch("images/dispatch/ongoing.PNG")
+        p = imagesearch("images/dispatch/ongoing.PNG", precision=0.85)
         
         # if still ongoing, return
         if found_position(p):
