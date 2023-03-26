@@ -37,7 +37,9 @@ def run_game(default=False):
         # click start game
         pos = search_loop("images/startup/game.PNG")
         rand_pause(15)
-        update = imagesearch("images/dispatch/ok.PNG")
+        # check for update
+        update = imagesearch("images/misc/confirm.PNG")
+        # wait for game to update if there is one
         if found_position(update):
             pyautogui.doubleClick(update[0], update[1])
             time.sleep(300)
