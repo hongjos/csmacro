@@ -4,6 +4,7 @@ import csv
 
 dive_count = 0
 raid_count = 0
+game_pos = [-1, -1] # stores position of game
 
 def run_game(default=False):
     """
@@ -62,16 +63,23 @@ def initialize_branches(default=False):
     branches = []
     branch_names = ["ADC-G1", "Chamber", "Campamento", "Front Bay", "Lotus", "Charade"]
     images = ["adcg1", "chamber", "campamento", "frontbay", "lotus", "charade"]
-    default_pos = [[1205, 669], [1512, 657], [1669, 840], 
-                   [1217, 939], [852, 779], [1009, 631]]
+    default_pos = [[398, 199], [703, 185], [860, 368], [410, 466], [46, 307], [204, 161]]
     
-    # get outclick
-    pos = search_loop("images/branch/campamento.PNG")   # find rightmost branch
-    out_pos = [pos[0]+70, pos[1]-195]                   # store outclick position
+    # get outclick position
+    out_pos = [game_pos[0]+920, game_pos[1]+203] 
+    if not default:
+        # find rightmost branch 
+        pos = search_loop("images/branch/campamento.PNG")
+        # store outclick position   
+        out_pos = [pos[0]+70, pos[1]-195]                 
 
+    # get/save positions of each branch
     for i, name in enumerate(branch_names):
         if default:
-            branches.append(Branch(name, default_pos[i]))
+            pos_x = game_pos[0] + default_pos[i][0]
+            pos_y = game_pos[1] + default_pos[i][1]
+            position = [pos_x, pos_y]
+            branches.append(Branch(name, position, out_pos))
         else:
             path = "images/branch/" + images[i] + ".PNG"
             pos = search_loop(path)
@@ -203,6 +211,7 @@ def exit_game(default=False):
         pyautogui.click(pos[0]+2, pos[1]+2)
 
 def automize(maxiter=20, use_default=False, wait_error=60):
+    global game_pos         # position of game
     totals = [0, 0, 0, 0]   # total dives, contracts, simulations, quartz found
     waiting = 2845          # 47 min. 25 sec.
     i = 1                   # dive iteration
@@ -227,10 +236,13 @@ def automize(maxiter=20, use_default=False, wait_error=60):
             exit_game()
             time.sleep(wait_error)
             continue
+        # get game position (for default)
+        pos = imagesearch("images/misc/game.PNG")
+        game_pos = [pos[0], pos[1]]
 
         # initialize all branches
         rand_pause(.5)
-        branches = initialize_branches(use_default)
+        branches = initialize_branches(default=True)
         # check if all branches initialized
         if len(branches) < 6:
             print("Could not initialize all branches.")
@@ -328,14 +340,16 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
 def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
-    automize()
+    # automize()
 
     # pos = search_loop("images/dispatch/ongoing.PNG", delay=0.2, maxiter=2, accuracy=0.85)
     # print(pos)
     # pyautogui.moveTo(pos)
     # minimize_windows()
-    # pos = imagesearch("images/branch/adcg1.PNG")
-    # branches = initialize_branches()
+    # global game_pos
+    # pos = imagesearch("images/misc/game.PNG")
+    # game_pos = [pos[0], pos[1]]
+    # branches = initialize_branches(default=True)
     # complete_missions(branches)
     # do_missions(branches)
     # find_disturbances()
