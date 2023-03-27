@@ -66,13 +66,11 @@ class Branch:
 
     def choose_mission(self, last=False):
         """
-        Choose mission with priority (high to low): blue tix, 60 quartz, 1 hr.
+        Choose mission with priority (high to low): blue tix, simulation, quartz
         """
-        # move to default (1 hr.) mission
-        p = search_loop("images/dispatch/replace.PNG")
-        pyautogui.moveTo(p[0]+290, p[1]-280)
+        # get default mission positions
+        default_p = search_loop("images/dispatch/replace.PNG")
         rand_pause(0.1)
-        # pyautogui.moveTo(1236, 661)
 
         # employee contract mission found?
         p = imagesearch("images/dispatch/contract.PNG")
@@ -80,17 +78,29 @@ class Branch:
             click_and_delay(p[0], p[1]-50, delay=0)
             self.mission_type = CONTRACT
             return
-        # quartz mission found?
-        p = imagesearch("images/dispatch/quartz2.PNG", precision=0.95)
+        # simulation mission found?
+        p = imagesearch("images/dispatch/sim.PNG")
         if found_position(p):
-            click_and_delay(p[0], p[1]-50, delay=0)
-            self.mission_type = QUARTZ
-            return
+            # check if 4-hour mission
+            if p[0] < default_p[0]+570:
+                click_and_delay(p[0], p[1]-50, delay=0)
+                self.mission_type = SIM
+                return
+        # quartz mission found?
+        # p = imagesearch("images/dispatch/quartz.PNG")
+        # if found_position(p):
+        #     click_and_delay(p[0], p[1]-50, delay=0)
+        #     self.mission_type = QUARTZ
+        #     return
         
-        # click default mission
+        # move to default mission
         if last:
             # move to 8 hr. mission
-            pyautogui.click()
+            pyautogui.moveTo(default_p[0]+690, default_p[1]-280)
+        else:
+            # move to 1 hr. mission
+            pyautogui.moveTo(default_p[0]+290, default_p[1]-280)
+        # click on default mission
         pyautogui.click()
 
     def still_ongoing(self):

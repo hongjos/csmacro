@@ -91,9 +91,9 @@ def initialize_branches(default=False):
     
     return branches
 
-def do_missions(branches: list[Branch]):
+def do_missions(branches: list[Branch], last=False):
     for branch in branches:
-        branch.start_dispatch()
+        branch.start_dispatch(last)
 
 def complete_missions(branches: list[Branch]):
     for branch in branches:
@@ -132,8 +132,8 @@ def find_disturbances(default=False, do_raids=True, sweep=True):
         pos = raid_support(do_raids)
         # no raids found? search for dives
         if not found_position(pos):
-            # if not sweeping, do a maximum of 3 dives
-            if not sweep and dive_count >= 3:
+            # if not sweeping, do a maximum of 5 dives
+            if not sweep and dive_count >= 5:
                 pos = [-1, -1]
             else:
                 pos = find_dives(sweep)
@@ -192,10 +192,10 @@ def do_dive(default=False, sweep_dive=True):
             click_and_delay(pos[0], pos[1], delay=150) # click and wait for dive to finish
         else:
             pos = search_loop("images/disturbance/start_dive.PNG")
-            click_and_delay(pos[0], pos[1], delay=720) # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=420) # click and wait for dive to finish
         
         # make sure dive is finished
-        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter= 40)
+        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=40)
         # dive not complete? exit --> probably shouldn't happen
         if not found_position(pos):
             print("dive error")
@@ -353,7 +353,7 @@ def main():
     # complete_missions(branches)
     # do_missions(branches)
     # find_disturbances()
-    # print_info(branches)
+    # print_info(branches)   
 
 
 if __name__ == "__main__":
