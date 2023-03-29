@@ -156,7 +156,14 @@ def raid_support(do_raid):
             pos = search_loop("images/dispatch/return.PNG")
             click_and_delay(pos[0], pos[1], delay=.5)               # return
         else:
-           click_and_delay(pos[0]+570, pos[1], delay=.5)            # click delete
+            # click delete
+            click_and_delay(pos[0]+570, pos[1], delay=.1)
+            # confirm delete
+            pos = search_loop("images/dispatch/ok.PNG")
+            click_and_delay(pos[0], pos[1])
+            # exit exploration tab
+            pos = search_loop("images/disturbance/explore_exit.PNG")
+            click_and_delay(pos[0], pos[1])           
         raid_count += 1 
     
     return pos
@@ -192,7 +199,7 @@ def do_dive(default=False, sweep_dive=True):
             click_and_delay(pos[0], pos[1], delay=150) # click and wait for dive to finish
         else:
             pos = search_loop("images/disturbance/start_dive.PNG")
-            click_and_delay(pos[0], pos[1], delay=420) # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=450) # click and wait for dive to finish
         
         # make sure dive is finished
         pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=40)
@@ -264,12 +271,15 @@ def automize(maxiter=20, use_default=False, wait_error=60):
 
         # complete any disturbances found
         start = time.time()
-        find_disturbances(sweep=False)
+        find_disturbances(do_raids=False, sweep=False)
         exit_game()
         # print dispatch information
         print_info(branches, i, t, totals)
         end = time.time()
 
+        # if last mission: don't need to wait
+        if i == maxiter:
+            break
         # wait until next dispatch
         wait_time = waiting - (end - start)
         time.sleep(wait_time) 
@@ -340,7 +350,7 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
 def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
-    # automize()
+    automize()
 
     # pos = search_loop("images/dispatch/ongoing.PNG", delay=0.2, maxiter=2, accuracy=0.85)
     # print(pos)
@@ -353,8 +363,11 @@ def main():
     # complete_missions(branches)
     # do_missions(branches)
     # find_disturbances()
-    # print_info(branches)   
-
+    # print_info(branches)
+    # pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.85)   
+    # click_and_delay(pos[0]+570, pos[1], delay=.1)
+    # pos = search_loop("images/dispatch/ok.PNG")
+    # click_and_delay(pos[0], pos[1])
 
 if __name__ == "__main__":
     main()

@@ -46,11 +46,12 @@ class Branch:
         # check if branch isn't doing anything
         p = imagesearch("images/dispatch/replace.PNG")
         if found_position(p):
-            p = search_loop("images/dispatch/return.PNG") # go back
+            # go back
+            p = search_loop("images/dispatch/return.PNG") 
             click_and_delay(p[0], p[1], delay=0.1)
-            self.start_dispatch() # do mission
-            self.in_progress = True
-            return 
+            # self.start_dispatch() # do mission
+            # self.in_progress = True
+            return
 
         # check if still ongoing mission
         if self.still_ongoing():
