@@ -93,6 +93,16 @@ def send_mail(text, email="waterabottle@gmail.com"):
         print("Email failed to send.")
         pass
 
+def sleep_time(time):
+    """
+    Returns true if the time given is in between 11:00 p.m. and 7:00 a.m.
+    """
+    sleep = datetime.time(23)
+    midnight = datetime.time(0)
+    wake = datetime.time(8)
+
+    return midnight <= time <= wake or time >= sleep
+
 def shut_down():
     """
     Shut down the computer.

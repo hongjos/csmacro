@@ -42,14 +42,18 @@ def run_game(default=False):
         update = imagesearch("images/misc/confirm.PNG")
         # wait for game to update if there is one
         if found_position(update):
-            pyautogui.doubleClick(update[0], update[1])
-            time.sleep(300)
+            pyautogui.click(update[0], update[1])
+            time.sleep(200)
+            # click into start game
+            pyautogui.click(pos[0]+600, pos[1]+400)
+            time.sleep(10)
         pyautogui.doubleClick(pos[0]+600, pos[1]+400)
         rand_pause(2)
 
-        # go to world map
-        pos = search_loop("images/startup/x.PNG") # find x button
+        # click x button
+        pos = search_loop("images/startup/x.PNG") 
         click_and_delay(pos[0]+5, pos[1]+5, delay=.5, rand=False)
+        # go to world map
         pos = search_loop("images/startup/world_map.PNG")
         pyautogui.click(pos[0], pos[1], clicks=3, interval=.3)
     
@@ -110,7 +114,7 @@ def complete_raids():
     pos = search_loop("images/disturbance/explore_exit.PNG")
     click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              # exit exploration
 
-def find_disturbances(default=False, do_raids=True, sweep=True):
+def find_disturbances(default=False, do_raids=True, max_dives=5, sweep=True):
     """
     Search for dives/raids until there are no more. 
     """
@@ -132,8 +136,7 @@ def find_disturbances(default=False, do_raids=True, sweep=True):
         pos = raid_support(do_raids)
         # no raids found? search for dives
         if not found_position(pos):
-            # if not sweeping, do a maximum of 5 dives
-            if not sweep and dive_count >= 5:
+            if dive_count >= max_dives:
                 pos = [-1, -1]
             else:
                 pos = find_dives(sweep)
@@ -257,8 +260,11 @@ def automize(maxiter=20, use_default=False, wait_error=60):
             time.sleep(wait_error)
             continue
 
+        # complete any finished raids
+        # complete_raids()
+        time.sleep(4)
+
         # get dispatch rewards
-        complete_raids()
         complete_missions(branches)
         rand_pause(0.1)
         # start new dispatch
@@ -271,7 +277,11 @@ def automize(maxiter=20, use_default=False, wait_error=60):
 
         # complete any disturbances found
         start = time.time()
-        find_disturbances(do_raids=False, sweep=False)
+        num_dives = 5
+        # if sleeping, don't do dives
+        if sleep_time(t.time()):
+            num_dives = 5
+        find_disturbances(do_raids=False, sweep=False, max_dives=num_dives)
         exit_game()
         # print dispatch information
         print_info(branches, i, t, totals)
