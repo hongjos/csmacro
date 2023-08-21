@@ -6,7 +6,7 @@ dive_count = 0
 raid_count = 0
 game_pos = [-1, -1] # stores position of game
 
-def run_game(default=False):
+def run_game(default=False, wait=60):
     """
     Start the game and go to World Map. 
     """
@@ -31,13 +31,13 @@ def run_game(default=False):
         pyautogui.click(clicks=3, interval=.3)
     else:
         # click game icon
-        pos = search_loop("images/startup/icon.PNG")
+        pos = search_loop("images/startup/icon.PNG", maxiter=30)
         pyautogui.doubleClick(pos[0]+5, pos[1]+5)
         rand_pause(3, False)
 
         # click start game
         pos = search_loop("images/startup/game.PNG")
-        rand_pause(15)
+        rand_pause(wait)
         # check for update
         update = imagesearch("images/misc/confirm.PNG")
         # wait for game to update if there is one
@@ -67,7 +67,7 @@ def initialize_branches(default=False):
     branches = []
     branch_names = ["ADC-G1", "Chamber", "Campamento", "Front Bay", "Lotus", "Charade"]
     images = ["adcg1", "chamber", "campamento", "frontbay", "lotus", "charade"]
-    default_pos = [[398, 199], [703, 185], [860, 368], [410, 466], [46, 307], [204, 161]]
+    default_pos = [[398, 199], [703, 185], [900, 350], [410, 466], [46, 307], [204, 161]]
     
     # get outclick position
     out_pos = [game_pos[0]+920, game_pos[1]+203] 
@@ -95,7 +95,7 @@ def initialize_branches(default=False):
     
     return branches
 
-def do_missions(branches: list[Branch], last=False):
+def do_missions(branches: list[Branch], last=1):
     for branch in branches:
         branch.start_dispatch(last)
 
@@ -109,7 +109,7 @@ def complete_raids():
     pos = search_loop("images/disturbance/raid_history.PNG")    # click raid history
     click_and_delay(pos[0], pos[1], delay=0.5)
     click_and_delay(pos[0]+710, pos[1]+211, delay=0)            # click complete all
-    pyautogui.moveTo(pos[0]+855, pos[1]-80)        
+    pyautogui.moveTo(pos[0]+860, pos[1]-80)        
     pyautogui.click(clicks=5, interval=0.3)
     pos = search_loop("images/disturbance/explore_exit.PNG")
     click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              # exit exploration
@@ -142,6 +142,9 @@ def find_disturbances(default=False, do_raids=True, max_dives=5, sweep=True):
                 pos = find_dives(sweep)
         # no disturbances found? finish find exploration
         if not found_position(pos):
+            # exit exploration
+            pos = search_loop("images/disturbance/explore_exit.PNG")
+            click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              
             return
 
 def raid_support(do_raid):
@@ -174,7 +177,7 @@ def raid_support(do_raid):
 def find_dives(sweep):
     pos = search_loop("images/disturbance/dive.PNG", delay=0.2, maxiter=2)
 
-    # dive found? --> sweep it
+    # complete dive if found
     if found_position(pos):
         click_and_delay(pos[0]+580, pos[1]+10, delay=3)
         do_dive(sweep_dive=sweep)
@@ -199,11 +202,13 @@ def do_dive(default=False, sweep_dive=True):
                 # this shouldn't happen but exit game just in case
                 exit_game()
                 return
-            click_and_delay(pos[0], pos[1], delay=150) # click and wait for dive to finish
+            # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=150)
         else:
             pos = search_loop("images/disturbance/start_dive.PNG")
-            click_and_delay(pos[0], pos[1], delay=450) # click and wait for dive to finish
-        
+            # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=450)
+
         # make sure dive is finished
         pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=40)
         # dive not complete? exit --> probably shouldn't happen
@@ -220,16 +225,31 @@ def exit_game(default=False):
         pos = search_loop("images/misc/exit.PNG", maxiter=20)
         pyautogui.click(pos[0]+2, pos[1]+2)
 
-def automize(maxiter=20, use_default=False, wait_error=60):
+def automize(maxiter=200, use_default=False, wait_error=60, raids=False, stop_time="3000-01-01 00:00:00"):
     global game_pos         # position of game
     totals = [0, 0, 0, 0]   # total dives, contracts, simulations, quartz found
-    waiting = 2845          # 47 min. 25 sec.
+    waiting = 2760          # 46 min.
     i = 1                   # dive iteration
+
+    last_dispatch = False
+    last_long = True        # true if last mission is 8-hour else 4-hour
+    last_type = 8           # last mission type (default 8-hour)
+
+    last_start, last_end = 1, 2     # time for 8-hour
+    if not last_long:
+        last_start, last_end = 4, 5 # time for 4-hour
+        last_type = 4
 
     # buffer time
     time.sleep(.5)
 
     while i <= maxiter:
+        # check time for last mission
+        curr_time = datetime.datetime.now()
+        target_time = datetime.datetime.strptime(stop_time, '%Y-%m-%d %H:%M:%S')
+        if curr_time > target_time:
+            last_dispatch = True
+
         # check for internet connection
         if no_internet():
             time.sleep(wait_error)
@@ -238,10 +258,17 @@ def automize(maxiter=20, use_default=False, wait_error=60):
         # minimize any open windows
         minimize_windows()
 
+        # random game start time (less sus O_O)
+        rand_wait = random.uniform(0, 40)
+        if i > 1: time.sleep(rand_wait)
+
+        # first iteration wait less
+        init_wait = 15 if i == 1 else 60
+
         # run the game
-        pos = run_game(use_default)
-        # something went wrong with run game?
+        pos = run_game(use_default, wait=init_wait)
         if not found_position(pos):
+            # something went wrong with run game?
             print("Run game error.")
             exit_game()
             time.sleep(wait_error)
@@ -249,6 +276,9 @@ def automize(maxiter=20, use_default=False, wait_error=60):
         # get game position (for default)
         pos = imagesearch("images/misc/game.PNG")
         game_pos = [pos[0], pos[1]]
+
+        # complete wait time (47 min. 25 sec.)
+        if i > 1: time.sleep(40 - rand_wait)
 
         # initialize all branches
         rand_pause(.5)
@@ -261,18 +291,25 @@ def automize(maxiter=20, use_default=False, wait_error=60):
             continue
 
         # complete any finished raids
-        # complete_raids()
-        time.sleep(4)
+        if raids:
+            complete_raids()
+        else:
+            time.sleep(4)
+
+        # first iteration, complete any dives left over
+        if i == 1: find_disturbances(do_raids=False, sweep=False)
 
         # get dispatch rewards
         complete_missions(branches)
         rand_pause(0.1)
+
         # start new dispatch
-        if i == maxiter:
-            do_missions(branches, last=True)
+        if last_dispatch:
+            do_missions(branches, last=last_type)
         else:
             do_missions(branches)
-        # get time finished branches
+
+        # get time finished dispatch missions
         t = datetime.datetime.now()
 
         # complete any disturbances found
@@ -281,14 +318,14 @@ def automize(maxiter=20, use_default=False, wait_error=60):
         # if sleeping, don't do dives
         if sleep_time(t.time()):
             num_dives = 5
-        find_disturbances(do_raids=False, sweep=False, max_dives=num_dives)
+        find_disturbances(do_raids=raids, sweep=False, max_dives=num_dives)
         exit_game()
         # print dispatch information
         print_info(branches, i, t, totals)
         end = time.time()
 
         # if last mission: don't need to wait
-        if i == maxiter:
+        if last_dispatch:
             break
         # wait until next dispatch
         wait_time = waiting - (end - start)
@@ -298,7 +335,7 @@ def automize(maxiter=20, use_default=False, wait_error=60):
     # shut down the pc
     shut_down()
 
-def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=False):
+def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=True):
     global dive_count, raid_count
     ticket_count = sim_count = quartz_count = 0
 
@@ -314,7 +351,8 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
     if save_info:
         with open('log.csv', 'a', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
-            data = [ticket_count, quartz_count, dive_count, raid_count]
+            end_date = curr_time.strftime("%m-%d-%Y %H:%M:%S")
+            data = [end_date, dive_count, ticket_count, sim_count, raid_count]
             writer.writerow(data)
     
     # update totals
@@ -360,7 +398,7 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
 def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
-    automize()
+    automize(raids=True, stop_time="2025-08-15 23:50:00")
 
     # pos = search_loop("images/dispatch/ongoing.PNG", delay=0.2, maxiter=2, accuracy=0.85)
     # print(pos)
@@ -369,6 +407,7 @@ def main():
     # global game_pos
     # pos = imagesearch("images/misc/game.PNG")
     # game_pos = [pos[0], pos[1]]
+    # pyautogui.moveTo(game_pos[0]+900, game_pos[1]+350)
     # branches = initialize_branches(default=True)
     # complete_missions(branches)
     # do_missions(branches)

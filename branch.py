@@ -65,7 +65,7 @@ class Branch:
         self.in_progress = False
         time.sleep(1)
 
-    def choose_mission(self, last=False):
+    def choose_mission(self, last=1):
         """
         Choose mission with priority (high to low): blue tix, simulation, quartz
         """
@@ -95,9 +95,12 @@ class Branch:
         #     return
         
         # move to default mission
-        if last:
+        if last == 8:
             # move to 8 hr. mission
             pyautogui.moveTo(default_p[0]+690, default_p[1]-280)
+        elif last == 4:
+            # move to 4 hr. mission
+            pyautogui.moveTo(default_p[0]+490, default_p[1]-280)
         else:
             # move to 1 hr. mission
             pyautogui.moveTo(default_p[0]+290, default_p[1]-280)

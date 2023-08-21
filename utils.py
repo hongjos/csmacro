@@ -48,16 +48,16 @@ def search_loop(path, delay=0.5, maxiter=10, accuracy=0.7):
 
     return pos 
 
-def minimize_windows(maxiter=10):
+def minimize_windows(maxiter=5):
     """
     Minimize any current windows on the screen.
     """
     # there shouldn't be too many windows on the screen
     for i in range(maxiter):
-        pos = search_loop("images/misc/cmd_min.PNG", maxiter=2)         # cmd prompt
+        pos = search_loop("images/misc/minimize2.PNG", maxiter=2)         # cmd prompt
 
-        if not found_position(pos):
-            pos = search_loop("images/misc/minimize.PNG", maxiter=2)    # vs code  
+        # if not found_position(pos):
+            # pos = search_loop("images/misc/minimize.PNG", maxiter=2)    # vs code  
 
         if found_position(pos):
             click_and_delay(pos[0], pos[1], delay=.3)
@@ -93,9 +93,16 @@ def send_mail(text, email="waterabottle@gmail.com"):
         print("Email failed to send.")
         pass
 
+def time_between(start, end):
+    """
+    Returns true if the current time is between two times periods.
+    """
+    curr = datetime.datetime.now()
+    return datetime.time(start) <= curr.time() <= datetime.time(end)
+
 def sleep_time(time):
     """
-    Returns true if the time given is in between 11:00 p.m. and 7:00 a.m.
+    Returns true if the time given is in between 11:00 p.m. and 8:00 a.m.
     """
     sleep = datetime.time(23)
     midnight = datetime.time(0)
