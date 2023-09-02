@@ -1,6 +1,6 @@
 """
 File: settings.py
-Just some globl variables used across scripts for now.
+Description: Just some globl variables used across scripts for now.
 """
 
 def init():

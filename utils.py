@@ -1,8 +1,14 @@
+"""
+File: utils.py
+Description: Some utilities for game auto.
+"""
+
 import sys
 import os
 import random
 import time
 import datetime
+import csv
 import smtplib, ssl
 import pyautogui                                # mouse clicking
 from python_imagesearch.imagesearch import *    # image detection
