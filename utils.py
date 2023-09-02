@@ -99,23 +99,6 @@ def send_mail(text, email="waterabottle@gmail.com"):
         print("Email failed to send.")
         pass
 
-def time_between(start, end):
-    """
-    Returns true if the current time is between two times periods.
-    """
-    curr = datetime.datetime.now()
-    return datetime.time(start) <= curr.time() <= datetime.time(end)
-
-def sleep_time(time):
-    """
-    Returns true if the time given is in between 11:00 p.m. and 8:00 a.m.
-    """
-    sleep = datetime.time(23)
-    midnight = datetime.time(0)
-    wake = datetime.time(8)
-
-    return midnight <= time <= wake or time >= sleep
-
 def shut_down():
     """
     Shut down the computer.

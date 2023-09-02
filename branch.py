@@ -1,3 +1,9 @@
+"""
+File: branch.py
+Description: Class for each of the branches. Each class contains their position
+and methods to start a dispatch mission.
+"""
+
 from imports import *
 
 class Branch:

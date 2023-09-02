@@ -1,10 +1,6 @@
 from imports import *
 from branch import Branch
 
-dive_count = 0
-raid_count = 0
-game_pos = [-1, -1] # stores position of game
-
 def run_game(default=False, wait=60):
     """
     Start the game and go to World Map. 
