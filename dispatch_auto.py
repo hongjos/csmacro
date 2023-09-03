@@ -8,6 +8,7 @@ from game_auto import *
 
 def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
+    settings.init() # initialize global variables
 
     
 
