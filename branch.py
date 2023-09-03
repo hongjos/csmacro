@@ -16,7 +16,7 @@ class Branch:
         self.mission_type = 0
         self.in_progress = False
     
-    def start_dispatch(self, last=False):
+    def start_dispatch(self, mission_time=1):
         # if mission in progress, no need to do anything
         if self.in_progress:
             return
@@ -30,7 +30,7 @@ class Branch:
            return 
         
         # choose mission
-        self.choose_mission(last)
+        self.choose_mission(mission_time)
 
         # do mission
         if self.default:
@@ -71,7 +71,7 @@ class Branch:
         self.in_progress = False
         time.sleep(1)
 
-    def choose_mission(self, last=1):
+    def choose_mission(self, mission_time=1):
         """
         Choose mission with priority (high to low): blue tix, simulation, quartz
         """
@@ -100,17 +100,13 @@ class Branch:
         #     self.mission_type = QUARTZ
         #     return
         
-        # move to default mission
-        if last == 8:
-            # move to 8 hr. mission
+        # click on default mission
+        if mission_time == 8:
             pyautogui.moveTo(default_p[0]+690, default_p[1]-280)
-        elif last == 4:
-            # move to 4 hr. mission
+        elif mission_time == 4:
             pyautogui.moveTo(default_p[0]+490, default_p[1]-280)
         else:
-            # move to 1 hr. mission
             pyautogui.moveTo(default_p[0]+290, default_p[1]-280)
-        # click on default mission
         pyautogui.click()
 
     def still_ongoing(self):

@@ -1,6 +1,8 @@
 """
 File: auto_utils.py
 Description: Contains functions for going to each game state.
+Some functions have a default parameter, setting it to true, doesn't use image search.
+#TODO: Add default locations
 """
 
 from imports import *
@@ -9,11 +11,9 @@ from branch import Branch
 #####################################################################
 # Game start up functions.
 #####################################################################
-def run_game(wait=60):
+def run_game(startup_buffer=60):
     """
     Start the game and go to home screen.
-    ---
-    wait : buffer time (in seconds)
     """
     # click game icon
     pos = search_loop("images/startup/icon.PNG", maxiter=30)
@@ -22,7 +22,7 @@ def run_game(wait=60):
 
     # click start game and wait
     pos = search_loop("images/startup/game.PNG")
-    rand_pause(wait)
+    rand_pause(startup_buffer)
 
     # check for update
     update = imagesearch("images/misc/confirm.PNG")
@@ -44,15 +44,11 @@ def run_game(wait=60):
 
     return pos
 
-def exit_game(default=False):
-    """
-    Exit out the game.
-    """
-    # TODO: Add default location
+def exit_game():
     pos = search_loop("images/misc/exit.PNG", maxiter=20)
     pyautogui.click(pos[0]+2, pos[1]+2)
 
-def get_game_pos():
+def init_game_pos():
     """
     Save the position of the game (upper left corner). 
     Need to initialize settings first.
@@ -61,21 +57,225 @@ def get_game_pos():
     settings.game_pos = [pos[0], pos[1]]
 
 #####################################################################
-# Go to specific screens functions.
+# Dispatch related functions.
 #####################################################################
 def goto_world_map():
-    """
-    Go to the World Map from Home screen.
-    """
     pos = search_loop("images/startup/world_map.PNG")
     pyautogui.click(pos[0], pos[1], clicks=3, interval=.3)
     rand_pause(2)
 
     return pos
 
-def goto_explore_status():
+def initialize_branches(default=True):
     """
-    Go to the Exploration Status from World Map.
+    Save positions of each branch.
     """
+    branches = []
+    branch_names = ["ADC-G1", "Chamber", "Campamento", "Front Bay", "Lotus", "Charade"]
+    images = ["adcg1", "chamber", "campamento", "frontbay", "lotus", "charade"]
+    default_pos = [[398, 199], [703, 185], [900, 350], [410, 466], [46, 307], [204, 161]]
     
+    # get outclick position
+    out_pos = [settings.game_pos[0]+920, settings.game_pos[1]+203] 
+    if not default:
+        # find rightmost branch 
+        pos = search_loop("images/branch/campamento.PNG")
+        # store outclick position   
+        out_pos = [pos[0]+70, pos[1]-195]                 
 
+    # get/save positions of each branch
+    for i, name in enumerate(branch_names):
+        if default:
+            pos_x = settings.game_pos[0] + default_pos[i][0]
+            pos_y = settings.game_pos[1] + default_pos[i][1]
+            position = [pos_x, pos_y]
+            branches.append(Branch(name, position, out_pos))
+        else:
+            path = "images/branch/" + images[i] + ".PNG"
+            pos = search_loop(path)
+            # add branch if found
+            if found_position(pos):
+                pyautogui.moveTo(pos[0], pos[1])
+                position = [pos[0]+10, pos[1]-30]
+                branches.append(Branch(name, position, out_pos))
+    
+    return branches
+
+def do_missions(branches: list[Branch], mission_time=1):
+    for branch in branches:
+        branch.start_dispatch(mission_time)
+
+def complete_missions(branches: list[Branch]):
+    for branch in branches:
+        branch.complete_mission()
+
+#####################################################################
+# Dive/Raid related functions.
+#####################################################################    
+def complete_raids():
+    # go to exploration status
+    pos = search_loop("images/disturbance/explore.PNG")         
+    click_and_delay(pos[0], pos[1], delay=0.5)
+    # click raid history
+    pos = search_loop("images/disturbance/raid_history.PNG")    
+    click_and_delay(pos[0], pos[1], delay=0.5)
+    # click complete all
+    click_and_delay(pos[0]+710, pos[1]+211, delay=0)            
+    pyautogui.moveTo(pos[0]+860, pos[1]-80)        
+    pyautogui.click(clicks=5, interval=0.3)
+    # exit exploration
+    pos = search_loop("images/disturbance/explore_exit.PNG")
+    click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)  
+
+def find_disturbances(do_raids=True, max_dives=5, sweep=False):
+    """
+    Search and complete for dives/raids until there are no more or limit reached.  
+    """
+    for i in range(6):
+        # go to exploration status
+        pos = search_loop("images/disturbance/explore.PNG")
+        # check if exploration status found
+        if not found_position(pos):
+            print("Error: Cannnot find Exploration Status.")
+            return
+        click_and_delay(pos[0], pos[1], delay=0.5)
+
+        # search for raids and send support requests
+        pos = raid_support(do_raids)
+        # if no raids, search for dives
+        if not found_position(pos):
+            if settings.dive_count >= max_dives:
+                pos = [-1, -1]
+            else:
+                pos = complete_dive(sweep)
+
+        # if no disturbances left, exit out
+        if not found_position(pos):
+            pos = search_loop("images/disturbance/explore_exit.PNG")
+            click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)              
+            return            
+
+def raid_support(do_raids):
+    pos = search_loop("images/disturbance/raid.PNG", delay=0.2, maxiter=2, accuracy=0.85)
+
+    if found_position(pos):
+        if do_raids:
+            # click go
+            click_and_delay(pos[0]+570, pos[1]+40, delay=.5)
+            # click support request
+            pos = search_loop("images/disturbance/support_req.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)
+            # confirm request
+            pos = search_loop("images/disturbance/raid_ok.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)
+            # go back
+            pos = search_loop("images/dispatch/return.PNG")
+            click_and_delay(pos[0], pos[1], delay=.5)
+        else:
+            # click delete
+            click_and_delay(pos[0]+570, pos[1], delay=.1)
+            # confirm delete
+            pos = search_loop("images/dispatch/ok.PNG")
+            click_and_delay(pos[0], pos[1])
+            # exit exploration tab
+            pos = search_loop("images/disturbance/explore_exit.PNG")
+            click_and_delay(pos[0], pos[1])           
+        settings.raid_count += 1 
+    
+    return pos
+
+def complete_dive(sweep):
+    pos = search_loop("images/disturbance/dive.PNG", delay=0.2, maxiter=2)
+
+    if found_position(pos):
+        click_and_delay(pos[0]+580, pos[1]+10, delay=3)
+
+        if sweep:
+            pos = search_loop("images/disturbance/sweep.PNG")
+            # only sweep if sweep button found
+            if found_position(pos):
+                click_and_delay(pos[0]+15, pos[1]+15, delay=.5, rand=False)
+                # start dive
+                pos = search_loop("images/disturbance/start_dive.PNG")
+            if not found_position(pos):
+                # this shouldn't happen but exit game just in case
+                exit_game()
+                return
+            # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=150)
+        else:
+            pos = search_loop("images/disturbance/start_dive.PNG")
+            # click and wait for dive to finish
+            click_and_delay(pos[0], pos[1], delay=450)
+
+        # make sure dive is finished
+        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=40)
+        if not found_position(pos):
+            print("Error: Dive Incomplete")
+            exit_game()
+
+        settings.dive_count += 1
+        
+    return pos
+
+
+#####################################################################
+# Logging and notification functions.
+##################################################################### 
+def print_dispatch_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=True):
+    ticket_count = sim_count = quartz_count = 0
+
+    for i in branches:
+        if i.mission_type == CONTRACT:
+            ticket_count += 1
+        if i.mission_type == SIM:
+            sim_count += 1
+        if i.mission_type == QUARTZ:
+            quartz_count += 1
+
+    # save dispatch information if needed
+    if save_info:
+        with open('log.csv', 'a', encoding='UTF8', newline='') as f:
+            writer = csv.writer(f)
+            end_date = curr_time.strftime("%m-%d-%Y %H:%M:%S")
+            data = [end_date, dive_count, ticket_count, sim_count, raid_count]
+            writer.writerow(data)
+    
+    # update totals
+    totals[0] += dive_count
+    totals[1] += ticket_count
+    totals[2] += sim_count
+    totals[3] += quartz_count
+
+    # get string of current time and time of next next dispatch
+    end_time = curr_time.strftime("%H:%M:%S")
+    t_next = curr_time + datetime.timedelta(seconds=2850) # 47.5 min
+    next_time = t_next.strftime("%H:%M:%S")
+
+    # print dispatch information
+    info = ""
+    info += f"Dispatch {iter} Complete: {end_time}\n"
+
+    if dive_count > 0:
+        info += f"Dives found: {dive_count}\n"
+    if raid_count > 0:
+        info += f"Raids found: {raid_count}\n"
+    if ticket_count > 0:
+        info += f"Employee Contracts found: {ticket_count}\n"
+    if sim_count > 0:
+        info += f"Simulation Permits found: {sim_count}\n"
+    if quartz_count > 0:
+        info += f"Quartz found: {quartz_count*60}\n"
+    
+    info += f"Total Dives: {totals[0]}\t Contracts: {totals[1]}\tPermits: {totals[2]}\n"
+    info += f"Approximate Next Dispatch: {next_time}\n"
+
+    # send info email
+    if send_email:
+        text = "\n" + info
+        send_mail(text)
+
+    info += "-----\n"
+    print(info)
+
+    dive_count = raid_count = 0
