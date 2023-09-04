@@ -3,6 +3,7 @@ File: game_auto.py
 Description:
 """
 
+import argparse
 from auto_utils import *
 
 def dispatch_auto(maxiter=200, wait_error=60):
@@ -108,8 +109,24 @@ def dispatch_auto(maxiter=200, wait_error=60):
     shut_down()
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('type')
+    args = parser.parse_args()
+
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     settings.init() # initialize global variables
+
+    auto_type = args.type
+
+    # default to auto dispatch
+    if auto_type == 'dispatch':
+        print("Starting dispatch...\n")
+    elif auto_type == 'daily':
+        print("Doing dailies...\n")
+    elif auto_type == 'raid':
+        print("Starting raid session...\n")
+    else:
+        print("huh...")
 
 if __name__ == "__main__":
     main()
