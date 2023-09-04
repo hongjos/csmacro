@@ -99,6 +99,34 @@ def send_mail(text, email="waterabottle@gmail.com"):
         print("Email failed to send.")
         pass
 
+def get_var(var_name, file_name="var.txt"):
+    """
+    Get the value of a variable from the var.txt file.
+    """
+    var_name = var_name.lower()
+    with open(file_name, 'r') as f:
+        for line in f:
+            name, val = line.strip().split('=')
+            if name == var_name:
+                return val
+    return None
+
+def set_var(var_name, new_val, file_name="var.txt"):
+    """
+    Set the value of a variable from the var.txt file.
+    """
+    var_name = var_name.lower()
+    with open(file_name, 'r') as f:
+        lines = f.readlines()
+
+    with open(file_name, 'w') as f:
+        for line in lines:
+            name, _ = line.strip().split('=')
+            if name == var_name:
+                f.write(f'{name}={new_val}\n')
+            else:
+                f.write(line)
+    
 def shut_down():
     """
     Shut down the computer.

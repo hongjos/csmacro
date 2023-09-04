@@ -16,14 +16,17 @@ def dispatch_auto(maxiter=200, wait_error=60):
     time.sleep(.5) # buffer
 
     while i <= maxiter:
+        # get variables
+        do_raids = bool(int(get_var('do_raids')))
+        num_dives = int(get_var('num_dives'))
+        last_dispatch = bool(int(get_var('last_dispatch')))
+
         # check time for last mission
-        # curr_time = datetime.datetime.now()
-        # target_time = datetime.datetime.strptime(stop_time, '%Y-%m-%d %H:%M:%S')
-        # if curr_time > target_time:
-        #     last_dispatch = True
-        do_raids = False
-        last_dispatch = False
-        num_dives = 5
+        curr_time = datetime.datetime.now()
+        stop_dispatch = get_var('stop_dispatch')
+        stop_time = datetime.datetime.strptime(stop_dispatch, '%Y-%m-%d %H:%M:%S')
+        if curr_time > stop_time:
+            last_dispatch = True
 
         # check for internet connection
         if no_internet():
@@ -101,6 +104,7 @@ def dispatch_auto(maxiter=200, wait_error=60):
         time.sleep(wait_time) 
         i += 1
 
+    set_var('last_dispatch', 0) # set last dispatch back to true
     shut_down()
 
 def main():
