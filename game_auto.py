@@ -97,7 +97,7 @@ def dispatch_auto(maxiter=200, wait_error=60):
         end = time.time()
 
         # if last mission: don't need to wait
-        if last_dispatch:
+        if last_dispatch:           
             break
         # wait until next dispatch
         wait_time = waiting - (end - start)
@@ -120,6 +120,7 @@ def main():
     # default to auto dispatch
     if auto_type == 'dispatch':
         print("Starting dispatch...\n")
+        dispatch_auto()
     elif auto_type == 'daily':
         print("Doing dailies...\n")
     elif auto_type == 'raid':

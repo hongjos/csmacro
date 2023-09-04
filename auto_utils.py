@@ -236,14 +236,14 @@ def print_dispatch_info(branches: list[Branch], iter, curr_time, totals, send_em
 
     # save dispatch information if needed
     if save_info:
-        with open('log.csv', 'a', encoding='UTF8', newline='') as f:
+        with open('dispatch_log.csv', 'a', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
             end_date = curr_time.strftime("%m-%d-%Y %H:%M:%S")
-            data = [end_date, dive_count, ticket_count, sim_count, raid_count]
+            data = [end_date, settings.dive_count, ticket_count, sim_count, settings.raid_count]
             writer.writerow(data)
     
     # update totals
-    totals[0] += dive_count
+    totals[0] += settings.dive_count
     totals[1] += ticket_count
     totals[2] += sim_count
     totals[3] += quartz_count
@@ -257,10 +257,10 @@ def print_dispatch_info(branches: list[Branch], iter, curr_time, totals, send_em
     info = ""
     info += f"Dispatch {iter} Complete: {end_time}\n"
 
-    if dive_count > 0:
-        info += f"Dives found: {dive_count}\n"
-    if raid_count > 0:
-        info += f"Raids found: {raid_count}\n"
+    if settings.dive_count > 0:
+        info += f"Dives found: {settings.dive_count}\n"
+    if settings.raid_count > 0:
+        info += f"Raids found: {settings.raid_count}\n"
     if ticket_count > 0:
         info += f"Employee Contracts found: {ticket_count}\n"
     if sim_count > 0:
@@ -279,4 +279,4 @@ def print_dispatch_info(branches: list[Branch], iter, curr_time, totals, send_em
     info += "-----\n"
     print(info)
 
-    dive_count = raid_count = 0
+    settings.dive_count = settings.raid_count = 0
