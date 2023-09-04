@@ -12,16 +12,19 @@ from branch import Branch
 #####################################################################
 # Game start up functions.
 #####################################################################
-def run_game(startup_buffer=60):
+def run_game(startup_buffer=60, default=False):
     """
     Start the game and go to home screen.
     """
     # click game icon
-    pos = search_loop("images/startup/icon.PNG", maxiter=30)
-    pyautogui.doubleClick(pos[0]+5, pos[1]+5)
+    if default: 
+        pyautogui.doubleClick(110, 230)
+    else:
+        pos = search_loop("images/startup/icon.PNG", maxiter=30)
+        pyautogui.doubleClick(pos[0]+5, pos[1]+5)
     rand_pause(3, False)
 
-    # click start game and wait
+    # wiat for game to start
     pos = search_loop("images/startup/game.PNG")
     rand_pause(startup_buffer)
 
