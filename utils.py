@@ -3,6 +3,7 @@ File: utils.py
 Description: Some utilities for game auto.
 """
 
+import argparse
 import sys
 import os
 import random
@@ -132,3 +133,18 @@ def shut_down():
     Shut down the computer.
     """
     os.system('shutdown -s -t 0')
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('function')
+    parser.add_argument('params', nargs='*')
+    args = parser.parse_args()
+
+    # construct string to eval
+    param_str = ', '.join(map(str, args.params))
+    eval_str = f"{args.function}({param_str})"
+
+    eval(eval_str) #NOTE: this is not very safe
+
+if __name__ == "__main__":
+    main()

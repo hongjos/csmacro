@@ -1,1 +1,0 @@
-py auto.py

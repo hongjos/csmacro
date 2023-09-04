@@ -3,7 +3,6 @@ File: game_auto.py
 Description:
 """
 
-import argparse
 from auto_utils import *
 
 def dispatch_auto(maxiter=200, wait_error=60):
@@ -105,7 +104,7 @@ def dispatch_auto(maxiter=200, wait_error=60):
         time.sleep(wait_time) 
         i += 1
 
-    set_var('last_dispatch', 0) # set last dispatch back to true
+    set_var('last_dispatch', 0) # set last dispatch back to false
     shut_down()
 
 def main():
