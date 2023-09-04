@@ -398,7 +398,7 @@ def print_info(branches: list[Branch], iter, curr_time, totals, send_email=True,
 def main():
     pyautogui.FAILSAFE = False # move mouse to upper left to abort
     
-    automize(raids=True, stop_time="2025-08-15 23:50:00")
+    automize(raids=False, stop_time="2025-08-22 23:50:00")
 
     # pos = search_loop("images/dispatch/ongoing.PNG", delay=0.2, maxiter=2, accuracy=0.85)
     # print(pos)
