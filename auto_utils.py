@@ -240,6 +240,7 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=20):
         # check if exploration status found
         if not found_position(pos):
             print("Error: Cannnot find Exploration Status.")
+            return
         click_and_delay(pos[0], pos[1], delay=0.5)
 
         # click on support request
@@ -249,6 +250,7 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=20):
         pos = search_loop("images/disturbance/raid_support.PNG")
         if not found_position(pos):
             print("No more raids.")
+            return
         click_and_delay(pos[0], pos[1], delay=.5)
 
         # click on prepare for battle
