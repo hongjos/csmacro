@@ -2,6 +2,6 @@
 File: testing.py
 Description: For adhoc testing.
 """
-from imports import *
+from auto_utils import *
 
 settings.init()

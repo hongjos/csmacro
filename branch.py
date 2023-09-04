@@ -4,7 +4,7 @@ Description: Class for each of the branches. Each class contains their position
 and methods to start a dispatch mission.
 """
 
-from imports import *
+from utils import *
 
 class Branch:
     def __init__(self, name, pos, out_pos, default=False):

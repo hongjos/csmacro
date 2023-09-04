@@ -5,7 +5,8 @@ Some functions have a default parameter, setting it to true, doesn't use image s
 #TODO: Add default locations
 """
 
-from imports import *
+from utils import *
+import settings
 from branch import Branch
 
 #####################################################################
