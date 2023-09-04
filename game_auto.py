@@ -107,6 +107,14 @@ def dispatch_auto(maxiter=200, wait_error=60):
     set_var('last_dispatch', 0) # set last dispatch back to false
     shut_down()
 
+def raid(maxiter=20):
+    """
+    Start raid session, need to be at World Map screen.
+    """
+    init_game_pos(default=True)
+    raid_season = get_var('raid_type')
+    raid_session(raid_type=raid_season)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('type')
@@ -125,6 +133,7 @@ def main():
         print("Doing dailies...\n")
     elif auto_type == 'raid':
         print("Starting raid session...\n")
+        raid()
     else:
         print("huh...")
 

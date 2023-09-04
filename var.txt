@@ -2,3 +2,4 @@ last_dispatch=0
 stop_dispatch=2025-01-01 00:00:01
 num_dives=5
 do_raids=0
+raid_type=inhibitor

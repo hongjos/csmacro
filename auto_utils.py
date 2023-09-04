@@ -49,13 +49,16 @@ def exit_game():
     pos = search_loop("images/misc/exit.PNG", maxiter=20)
     pyautogui.click(pos[0]+2, pos[1]+2)
 
-def init_game_pos():
+def init_game_pos(default=False):
     """
     Save the position of the game (upper left corner). 
     Need to initialize settings first.
     """
-    pos = imagesearch("images/misc/game.PNG")
-    settings.game_pos = [pos[0], pos[1]]
+    if default:
+        settings.game_pos = [817, 442]
+    else:
+        pos = imagesearch("images/misc/game.PNG")
+        settings.game_pos = [pos[0], pos[1]]
 
 #####################################################################
 # Dispatch related functions.
@@ -219,6 +222,46 @@ def complete_dive(sweep):
         
     return pos
 
+def raid_session(wait_time=150, raid_type='britra', maxiter=20):
+    """
+    Do a raid cycle. Defaults to Britra raid. Need to be at World Map.
+    """
+    team_pos = [settings.game_pos[0]+50, settings.game_pos[1]+125]
+    if raid_type == 'inhibitor':
+        wait_time = 120
+        team_pos[1] += 60
+    
+    for i in range(maxiter):
+        # go to exploration status
+        pos = search_loop("images/disturbance/explore.PNG", delay=10, maxiter=10)
+        # check if exploration status found
+        if not found_position(pos):
+            print("Error: Cannnot find Exploration Status.")
+        click_and_delay(pos[0], pos[1], delay=0.5)
+
+        # click on support request
+        click_and_delay(settings.game_pos[0]+63, settings.game_pos[1]+215, delay=0.5)
+
+        # click on a raid support
+        pos = search_loop("images/disturbance/raid_support.PNG")
+        if not found_position(pos):
+            print("No more raids.")
+        click_and_delay(pos[0], pos[1], delay=.5)
+
+        # click on prepare for battle
+        pos = search_loop("images/disturbance/raid_prepare.PNG")
+        click_and_delay(pos[0], pos[1], delay=.5)
+
+        # wait for team page to pop up
+        pos = search_loop("images/disturbance/raid_start.PNG")
+        # select team
+        click_and_delay(team_pos[0], team_pos[1], delay=0.5)
+        # start raid
+        click_and_delay(pos[0], pos[1], delay=.5)
+
+        # wait for raid to finish
+        time.sleep(wait_time)
+        print(f"Complete {i} raid(s).")
 
 #####################################################################
 # Logging and notification functions.
