@@ -90,7 +90,6 @@ def dispatch_auto(maxiter=200, wait_error=60):
 
         # complete any disturbances found
         start = time.time()
-        num_dives = 5
         find_disturbances(do_raids, max_dives=num_dives, sweep=False)
         exit_game()
         print_dispatch_info(branches, i, t, totals)
