@@ -114,6 +114,17 @@ def raid(maxiter=20):
     raid_season = get_var('raid_type')
     raid_session(raid_type=raid_season)
 
+def salary_negotiation(type='blue', interval=1.75, maxiter=100):
+    """
+    Max out the level of a unit. Default type is blue appraisal.
+    """
+    pyautogui.FAILSAFE = True
+    init_game_pos(default=True)
+
+    for i in range(maxiter):
+        salary_negotiate(type, interval)
+        time.sleep(.2)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('type')
@@ -133,6 +144,9 @@ def main():
     elif auto_type == 'raid':
         print("Starting raid session...\n")
         raid()
+    elif auto_type == 'salary':
+        print("Starting salary negotiation...\n")
+        salary_negotiation()
     else:
         print("huh...")
 

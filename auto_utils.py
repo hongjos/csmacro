@@ -269,6 +269,27 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=20):
         print(f"Complete {i} raid(s).")
 
 #####################################################################
+# Miscellaneous.
+#####################################################################  
+def salary_negotiate(type='blue', interval=2):
+    """
+    Do a salary negotation. Default type is blue appraisal.
+    """
+    # select appraisal
+    pos = [settings.game_pos[0]+740, settings.game_pos[1]+390] # blue appraisal position
+    if type == 'brown': pos[0] -= 100
+    if type == 'purple': pos[0] += 100
+    pyautogui.moveTo(pos[0], pos[1])
+    
+    # hold down
+    pyautogui.mouseDown()
+    time.sleep(interval)
+    pyautogui.mouseUp()
+
+    # click negotation
+    pyautogui.click(x=pos[0], y=pos[1]+130)
+
+#####################################################################
 # Logging and notification functions.
 ##################################################################### 
 def print_dispatch_info(branches: list[Branch], iter, curr_time, totals, send_email=True, save_info=True):
