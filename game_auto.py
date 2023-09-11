@@ -118,6 +118,8 @@ def daily():
         print("Error: Game Startup Failed")
         exit_game()
         return
+    
+    init_game_pos()
 
 
 def raid(maxiter=20):

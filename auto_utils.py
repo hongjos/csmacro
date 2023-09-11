@@ -271,7 +271,16 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=20):
 #####################################################################
 # Dailies.
 ##################################################################### 
+def guild_donation():
+    # move to guild page
+    click_and_delay(settings.game_pos[0]+90, settings.game_pos[1]+82)
 
+    # click donate
+    pos = search_loop("images/daily/donate.PNG")
+    click_and_delay(pos[0], pos[1])
+
+    # click on gold
+    click_and_delay(settings.game_pos[0]+440, settings.game_pos[1]+440)
 
 #####################################################################
 # Miscellaneous.
