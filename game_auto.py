@@ -106,6 +106,20 @@ def dispatch_auto(maxiter=200, wait_error=60):
     set_var('last_dispatch', 0) # set last dispatch back to false
     shut_down()
 
+def daily():
+    """
+    Do dailies.
+    """
+    # run the game
+    pos = run_game(startup_buffer=60)
+    # confirm home screen
+    pos = search_loop("images/daily/operation.PNG")
+    if not found_position(pos):
+        print("Error: Game Startup Failed")
+        exit_game()
+        return
+
+
 def raid(maxiter=20):
     """
     Start raid session, need to be at World Map screen.

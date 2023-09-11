@@ -11,4 +11,7 @@ init_game_pos()
 pyautogui.moveTo(settings.game_pos)
 print(f"Game Position:({settings.game_pos[0]}, {settings.game_pos[1]})")
 
+pos = search_loop("images/daily/operation.PNG")
+pyautogui.moveTo(pos[0], pos[1])
+
 pyautogui.displayMousePosition()
