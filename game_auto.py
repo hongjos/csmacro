@@ -20,7 +20,7 @@ def dispatch_auto(maxiter=200, wait_error=60):
         do_raids = bool(int(get_var('do_raids')))
         num_dives = int(get_var('num_dives'))
         last_dispatch = bool(int(get_var('last_dispatch')))
-        bed_time = bool(int(get_var('sleeping')))
+        bed_time = bool(int(get_var('bed_time')))
 
         # if bed time, sleep for 30 min. 
         if bed_time:
