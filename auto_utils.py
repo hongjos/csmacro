@@ -178,6 +178,11 @@ def raid_support(do_raids):
             # go back
             pos = search_loop("images/dispatch/return.PNG")
             click_and_delay(pos[0], pos[1], delay=.5)
+            # exit exploraion tab if needed
+            pos_exit = search_loop("images/disturbance/explore_exit.PNG")
+            if found_position(pos_exit):
+                pos = pos_exit
+                click_and_delay(pos[0]+5, pos[1]+5, delay=0.5)
         else:
             # click delete
             click_and_delay(pos[0]+570, pos[1], delay=.1)

@@ -1,6 +1,6 @@
 last_dispatch=0
-stop_dispatch=2025-01-01 00:00:01
+stop_dispatch=2025-9-12 15:00:01
 num_dives=5
-do_raids=0
+do_raids=1
 raid_type=britra
 bed_time=0

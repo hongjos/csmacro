@@ -110,7 +110,6 @@ def dispatch_auto(maxiter=200, wait_error=60):
         i += 1
 
     set_var('last_dispatch', 0) # set last dispatch back to false
-    shut_down()
 
 def daily():
     """
@@ -161,6 +160,7 @@ def main():
     if auto_type == 'dispatch':
         print("Starting dispatch...\n")
         dispatch_auto()
+        shut_down()
     elif auto_type == 'daily':
         print("Doing dailies...\n")
     elif auto_type == 'raid':
