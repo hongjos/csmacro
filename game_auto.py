@@ -146,6 +146,13 @@ def salary_negotiation(type='blue', interval=1.75, maxiter=100):
         salary_negotiate(type, interval)
         time.sleep(.2)
 
+def gigas():
+    """
+    Click on Seo Yoon first, then will deploy her.
+    """
+    init_game_pos(default=True)
+    gigas_bug()
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('type')
@@ -170,6 +177,9 @@ def main():
     elif auto_type == 'salary':
         print("Starting salary negotiation...\n")
         salary_negotiation()
+    elif auto_type == 'gigas':
+        print("Deploy Seo Yoon...\n")
+        gigas()
     else:
         print("huh...")
 

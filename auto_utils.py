@@ -308,6 +308,13 @@ def salary_negotiate(type='blue', interval=2):
     # click negotation
     pyautogui.click(x=pos[0], y=pos[1]+130)
 
+def gigas_bug():
+    """
+    Move mouse to deploy spot for Seo Yoon.
+    """
+    pyautogui.moveTo(settings.game_pos[0]+791, settings.game_pos[1]+435) 
+    pyautogui.doubleClick() 
+
 #####################################################################
 # Logging and notification functions.
 ##################################################################### 
