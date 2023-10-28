@@ -110,6 +110,8 @@ def dispatch_auto(maxiter=200, wait_error=60):
         i += 1
 
     set_var('last_dispatch', 0) # set last dispatch back to false
+    time.sleep(2)
+    pyautogui.doubleClick(115, 1240) # power - night
 
 def daily():
     """
@@ -165,13 +167,25 @@ def main():
 
     # default to auto dispatch
     if auto_type == 'dispatch':
+        ############## DISPATCH AUTO ##############
         # time.sleep(7200)
         print("Starting dispatch...\n")
         dispatch_auto()
-        shut_down()
+
+        # 6:30
+        for i in range(1,50):
+            while(datetime.datetime.today().hour != 6):
+                time.sleep(3540)
+            while(datetime.datetime.today().minute < 30):
+                time.sleep(60)
+
+            pyautogui.doubleClick(35, 1240) # power - balance
+            dispatch_auto()
     elif auto_type == 'daily':
+        ############## TODO: DAILIES ##############
         print("Doing dailies...\n")
     elif auto_type == 'raid':
+        ############## RAID AUTO ##############
         print("Starting raid session...\n")
         raid()
     elif auto_type == 'salary':
