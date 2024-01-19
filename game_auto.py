@@ -111,7 +111,7 @@ def dispatch_auto(maxiter=200, wait_error=60):
 
     set_var('last_dispatch', 0) # set last dispatch back to false
     time.sleep(2)
-    pyautogui.doubleClick(115, 1240) # power - night
+    # pyautogui.doubleClick(115, 1240) # power - night
 
 def daily():
     """
@@ -127,7 +127,6 @@ def daily():
         return
     
     init_game_pos()
-
 
 def raid(maxiter=20):
     """
@@ -147,13 +146,18 @@ def salary_negotiation(type='blue', interval=1.75, maxiter=100):
     for i in range(maxiter):
         salary_negotiate(type, interval)
         time.sleep(.2)
-
-def gigas():
+    
+def gauntlet_point(maxiter=7):
     """
-    Click on Seo Yoon first, then will deploy her.
+    In NPC screen, get gauntlet points.
     """
+    pyautogui.FAILSAFE = True
     init_game_pos(default=True)
-    gigas_bug()
+
+    for i in range(maxiter):
+        print(f"battle {i+1}")
+        npc_battle()
+        time.sleep(1.5)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -168,19 +172,32 @@ def main():
     # default to auto dispatch
     if auto_type == 'dispatch':
         ############## DISPATCH AUTO ##############
-        # time.sleep(7200)
+        time.sleep(23400)
         print("Starting dispatch...\n")
         dispatch_auto()
 
-        # 6:30
-        for i in range(1,50):
-            while(datetime.datetime.today().hour != 6):
-                time.sleep(3540)
-            while(datetime.datetime.today().minute < 30):
-                time.sleep(60)
+        # Sunday 9 AM, Pause 8 Hours
+        # for i in range(8):
+        #     time.sleep(3600)
+        
+        # # Tuesday 10 PM, Pause 8 Hours
+        # set_var('stop_dispatch', '2023-11-21 22:00:00')
+        # dispatch_auto()
+        # for i in range(8):
+        #     time.sleep(3600)
+        
+        # set_var('stop_dispatch', '2025-01-01 01:00:00')
+        # dispatch_auto()
 
-            pyautogui.doubleClick(35, 1240) # power - balance
-            dispatch_auto()
+        # 6:30
+        # for i in range(1,50):
+        #     while(datetime.datetime.today().hour != 6):
+        #         time.sleep(3540)
+        #     while(datetime.datetime.today().minute < 30):
+        #         time.sleep(60)
+
+        #     pyautogui.doubleClick(35, 1240) # power - balance
+        #     dispatch_auto()
     elif auto_type == 'daily':
         ############## TODO: DAILIES ##############
         print("Doing dailies...\n")
@@ -191,9 +208,9 @@ def main():
     elif auto_type == 'salary':
         print("Starting salary negotiation...\n")
         salary_negotiation()
-    elif auto_type == 'gigas':
-        print("Deploy Seo Yoon...\n")
-        gigas()
+    elif auto_type == 'gauntlet':
+        print("Doing NPC Battles...\n")
+        gauntlet_point()
     else:
         print("huh...")
 

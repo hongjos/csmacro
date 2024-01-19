@@ -61,10 +61,10 @@ def minimize_windows(maxiter=5):
     """
     # there shouldn't be too many windows on the screen
     for i in range(maxiter):
-        pos = search_loop("images/misc/minimize2.PNG", maxiter=2)         # cmd prompt
+        pos = search_loop("images/misc/minimize2.PNG", maxiter=2)
 
         # if not found_position(pos):
-            # pos = search_loop("images/misc/minimize.PNG", maxiter=2)    # vs code  
+            # pos = search_loop("images/misc/minimize.PNG", maxiter=2) 
 
         if found_position(pos):
             click_and_delay(pos[0], pos[1], delay=.3)
@@ -83,7 +83,7 @@ def no_internet():
 
 def send_mail(text, email="waterabottle@gmail.com"):
     """
-    Send some text to an email.
+    Send an email notification.
     """
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"

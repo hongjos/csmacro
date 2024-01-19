@@ -221,7 +221,7 @@ def complete_dive(sweep):
             click_and_delay(pos[0], pos[1], delay=450)
 
         # make sure dive is finished
-        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=40)
+        pos = search_loop("images/disturbance/explore.PNG", delay=15, maxiter=60)
         if not found_position(pos):
             print("Error: Dive Incomplete")
             exit_game()
@@ -230,9 +230,9 @@ def complete_dive(sweep):
         
     return pos
 
-def raid_session(wait_time=150, raid_type='britra', maxiter=20):
+def raid_session(wait_time=150, raid_type='britra', maxiter=30):
     """
-    Do a raid cycle. Defaults to Britra raid. Need to be at World Map.
+    Do raid cycle (need to be at World Map screen).
     """
     team_pos = [settings.game_pos[0]+50, settings.game_pos[1]+125]
     if raid_type == 'inhibitor':
@@ -271,7 +271,7 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=20):
 
         # wait for raid to finish
         time.sleep(wait_time)
-        print(f"Complete {i} raid(s).")
+        print(f"Complete {i+1} raid(s).")
 
 #####################################################################
 # Dailies.
@@ -304,16 +304,21 @@ def salary_negotiate(type='blue', interval=2):
     pyautogui.mouseDown()
     time.sleep(interval)
     pyautogui.mouseUp()
-
     # click negotation
     pyautogui.click(x=pos[0], y=pos[1]+130)
 
-def gigas_bug():
+def npc_battle():
     """
-    Move mouse to deploy spot for Seo Yoon.
+    Do NPC battle.
     """
-    pyautogui.moveTo(settings.game_pos[0]+791, settings.game_pos[1]+435) 
-    pyautogui.doubleClick() 
+    # battle button
+    click_and_delay(settings.game_pos[0]+600, settings.game_pos[1]+230, delay=1)
+    # start battle
+    pyautogui.doubleClick(settings.game_pos[0]+800, settings.game_pos[1]+510)
+    # wait for battle to finish
+    time.sleep(80)
+    # exit out
+    click_and_delay(settings.game_pos[0]+400, settings.game_pos[1]+300, delay=.5)
 
 #####################################################################
 # Logging and notification functions.
