@@ -55,21 +55,12 @@ def search_loop(path, delay=0.5, maxiter=10, accuracy=0.7):
 
     return pos 
 
-def minimize_windows(maxiter=5):
+def minimize_windows():
     """
     Minimize any current windows on the screen.
     """
-    # there shouldn't be too many windows on the screen
-    for i in range(maxiter):
-        pos = search_loop("images/misc/minimize2.PNG", maxiter=2)
-
-        # if not found_position(pos):
-            # pos = search_loop("images/misc/minimize.PNG", maxiter=2) 
-
-        if found_position(pos):
-            click_and_delay(pos[0], pos[1], delay=.3)
-        else:
-            return
+    pyautogui.hotkey('winleft', 'd')
+    time.sleep(.5)
 
 def no_internet():
     """

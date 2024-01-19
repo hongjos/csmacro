@@ -7,7 +7,7 @@ from auto_utils import *
 
 def dispatch_auto(maxiter=200, wait_error=60):
     """
-    Automatically do dispatch missions, complete dives, and send raid supports.
+    Auotmatic dispatch completion.
     """
     totals = [0, 0, 0, 0]   # total dives, contracts, simulations, quartz found
     waiting = 2760          # 46 min.
@@ -172,7 +172,6 @@ def main():
     # default to auto dispatch
     if auto_type == 'dispatch':
         ############## DISPATCH AUTO ##############
-        time.sleep(23400)
         print("Starting dispatch...\n")
         dispatch_auto()
 
