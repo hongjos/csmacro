@@ -80,7 +80,7 @@ def send_mail(text, email="waterabottle@gmail.com"):
     smtp_server = "smtp.gmail.com"
     sender_email = "waterabottle@gmail.com"  
     receiver_email = email
-    password = "dpjklrcricpjjlzt"
+    password = os.environ['spamemail']
 
     try:
         context = ssl.create_default_context()
