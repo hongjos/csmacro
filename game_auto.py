@@ -97,6 +97,20 @@ def dispatch_auto(maxiter=200, wait_error=60):
         # complete any disturbances found
         start = time.time()
         find_disturbances(do_raids, max_dives=num_dives, sweep=False)
+
+        # get eternium status (this is sht code)
+        eter_pos = [settings.game_pos[0]+616, settings.game_pos[1]+40]
+        eternium = -1
+        try:
+            eternium = image_to_text(region=(eter_pos[0],eter_pos[1], 6, 20), is_number=True)
+        except Exception:
+            print("Oops: Failed to get eternium.")
+            pass
+        print(f"current eternium: {eternium}\n")
+        # send notif if eternium almost full
+        if eternium > 28000:
+            send_mail("Too much Eternium O_O")
+
         exit_game()
         print_dispatch_info(branches, i, t, totals)
         end = time.time()
