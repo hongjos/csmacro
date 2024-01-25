@@ -2,5 +2,5 @@ last_dispatch=0
 stop_dispatch=2026-01-01 01:00:00
 num_dives=5
 do_raids=0
-raid_type=britra
+raid_type=kraken
 bed_time=0

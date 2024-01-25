@@ -172,7 +172,7 @@ def main():
     # default to auto dispatch
     if auto_type == 'dispatch':
         ############## DISPATCH AUTO ##############
-        print("Starting dispatch...\n")
+        print("------- Dispatches -------\n")
         dispatch_auto()
 
         # Sunday 9 AM, Pause 8 Hours
@@ -199,16 +199,17 @@ def main():
         #     dispatch_auto()
     elif auto_type == 'daily':
         ############## TODO: DAILIES ##############
-        print("Doing dailies...\n")
+        print("------- Dailies -------\n")
     elif auto_type == 'raid':
         ############## RAID AUTO ##############
-        print("Starting raid session...\n")
+        raid_season = get_var('raid_type')
+        print(f"------- Raids ({raid_season}) -------\n")
         raid()
     elif auto_type == 'salary':
-        print("Starting salary negotiation...\n")
+        print("------- Salary Negotiation -------\n")
         salary_negotiation()
     elif auto_type == 'gauntlet':
-        print("Doing NPC Battles...\n")
+        print("------- Gauntlet NPC Battles -------\n")
         gauntlet_point()
     else:
         print("huh...")

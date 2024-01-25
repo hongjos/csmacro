@@ -230,18 +230,20 @@ def complete_dive(sweep):
         
     return pos
 
-def raid_session(wait_time=150, raid_type='britra', maxiter=30):
+def raid_session(wait_time=90, raid_type='britra', maxiter=30):
     """
     Complete raids.
     """
     team_pos = [settings.game_pos[0]+50, settings.game_pos[1]+125]
     if raid_type == 'inhibitor':
-        wait_time = 120
         team_pos[1] += 60
+    elif raid_type == 'kraken':
+        wait_time += 30
+        team_pos[1] += 240
     
     for i in range(maxiter):
         # go to exploration status
-        pos = search_loop("images/disturbance/explore.PNG", delay=10, maxiter=10)
+        pos = search_loop("images/disturbance/explore.PNG", delay=5, maxiter=5)
         # check if exploration status found
         if not found_position(pos):
             print("Error: Cannnot find Exploration Status.")
@@ -271,6 +273,7 @@ def raid_session(wait_time=150, raid_type='britra', maxiter=30):
 
         # wait for raid to finish
         time.sleep(wait_time)
+        pos = search_loop("images/disturbance/explore.PNG", delay=10, maxiter=20)
         print(f"Complete {i+1} raid(s).")
 
 #####################################################################
