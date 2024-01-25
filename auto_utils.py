@@ -232,7 +232,7 @@ def complete_dive(sweep):
 
 def raid_session(wait_time=150, raid_type='britra', maxiter=30):
     """
-    Do raid cycle (need to be at World Map screen).
+    Complete raids.
     """
     team_pos = [settings.game_pos[0]+50, settings.game_pos[1]+125]
     if raid_type == 'inhibitor':
@@ -292,7 +292,7 @@ def guild_donation():
 #####################################################################  
 def salary_negotiate(type='blue', interval=2):
     """
-    Do a salary negotation. Default type is blue appraisal.
+    Level employees up. Default type is blue appraisal.
     """
     # select appraisal
     pos = [settings.game_pos[0]+740, settings.game_pos[1]+390] # blue appraisal position
@@ -309,7 +309,7 @@ def salary_negotiate(type='blue', interval=2):
 
 def npc_battle():
     """
-    Do NPC battle.
+    Do Gauntlet NPC battle.
     """
     # battle button
     click_and_delay(settings.game_pos[0]+600, settings.game_pos[1]+230, delay=1)

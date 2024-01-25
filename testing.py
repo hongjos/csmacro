@@ -5,7 +5,7 @@ Description: For adhoc testing.
 from auto_utils import *
 
 settings.init()
-
+send_mail("testing")
 # initial game pos
 # init_game_pos()
 # pyautogui.moveTo(settings.game_pos)

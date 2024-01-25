@@ -7,7 +7,7 @@ from auto_utils import *
 
 def dispatch_auto(maxiter=200, wait_error=60):
     """
-    Auotmatic dispatch completion.
+    Dispatches.
     """
     totals = [0, 0, 0, 0]   # total dives, contracts, simulations, quartz found
     waiting = 2760          # 46 min.
@@ -130,7 +130,7 @@ def daily():
 
 def raid(maxiter=20):
     """
-    Start raid session, need to be at World Map screen.
+    Do raids, need to be at World Map screen.
     """
     init_game_pos(default=True)
     raid_season = get_var('raid_type')
@@ -138,7 +138,7 @@ def raid(maxiter=20):
 
 def salary_negotiation(type='blue', interval=1.75, maxiter=100):
     """
-    Max out the level of a unit. Default type is blue appraisal.
+    Max out the level of a unit.
     """
     pyautogui.FAILSAFE = True
     init_game_pos(default=True)
@@ -149,7 +149,7 @@ def salary_negotiation(type='blue', interval=1.75, maxiter=100):
     
 def gauntlet_point(maxiter=7):
     """
-    In NPC screen, get gauntlet points.
+    Do NPC battles to get gauntlet points.
     """
     pyautogui.FAILSAFE = True
     init_game_pos(default=True)

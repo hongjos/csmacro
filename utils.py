@@ -60,7 +60,7 @@ def minimize_windows():
     Minimize any current windows on the screen.
     """
     pyautogui.hotkey('winleft', 'd')
-    time.sleep(.5)
+    time.sleep(1)
 
 def no_internet():
     """
