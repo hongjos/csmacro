@@ -11,7 +11,8 @@ import time
 import datetime
 import csv
 import smtplib, ssl
-import pyautogui                                # mouse clicking
+import pyautogui
+import pytesseract                              # OCR
 from python_imagesearch.imagesearch import *    # image detection
 
 QUARTZ = 1
@@ -61,6 +62,25 @@ def minimize_windows():
     """
     pyautogui.hotkey('winleft', 'd')
     time.sleep(1)
+
+def image_to_text(region, is_number=False):
+    """
+    Takes a screenshot of a region and converts it to text.
+    Region is left, top, width, and height.
+    """
+    img = pyautogui.screenshot(region=region)
+
+    # convert to text and stip new lines
+    text = pytesseract.image_to_string(img)
+    text = text.strip()
+    img = None
+    
+    # convert to integer if needed
+    if is_number:
+        num = text.replace(',', '').replace(' ', '')
+        return int(num)
+    else:
+        return text
 
 def no_internet():
     """
