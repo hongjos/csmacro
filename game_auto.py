@@ -110,8 +110,8 @@ def dispatch_auto(maxiter=200, wait_error=60):
         print(f"Current Eternium: {eternium}\n")
         # send notif if eternium almost full
         if eternium > 28000:
-            eter_alert = f"Eternium Alert! (Current Eternium: {eternium})\n"
-            send_mail(eter_alert, email=os.environ['spam_email2'])
+            eter_alert = f"\nEternium Alert! (Current Eternium: {eternium})\n"
+            send_mail(eter_alert, recipient=os.environ['spam_email2'])
 
         exit_game()
         print_dispatch_info(branches, i, t, totals)

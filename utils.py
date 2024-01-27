@@ -92,14 +92,14 @@ def no_internet():
         return True
     return False
 
-def send_mail(text, email=os.environ['spam_email1']):
+def send_mail(text, recipient=os.environ['spam_email1']):
     """
     Send an email notification.
     """
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"
     sender_email = os.environ['spam_email1'] 
-    receiver_email = email
+    receiver_email = recipient
     password = os.environ['spam_pswd']
 
     try:
